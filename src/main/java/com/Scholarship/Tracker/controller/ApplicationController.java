@@ -3,7 +3,7 @@ package com.Scholarship.Tracker.controller;
 import com.Scholarship.Tracker.entity.Application;
 import com.Scholarship.Tracker.service.ApplicationService;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 @RestController
@@ -62,9 +62,21 @@ public class ApplicationController {
     }
 
     @PutMapping("/{id}/disbursement")
-    public Application completeDisbursement(
+    public ResponseEntity<?> completeDisbursement(
             @PathVariable Long id) {
 
-        return applicationService.completeDisbursement(id);
+        try {
+
+            Application application =
+                    applicationService.completeDisbursement(id);
+
+            return ResponseEntity.ok(application);
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
     }
 }

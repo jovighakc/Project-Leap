@@ -28,18 +28,21 @@ public class VerificationService {
                 applicationRepository.findById(applicationId).orElse(null);
 
         if (application == null) {
-            return null;
+            throw new RuntimeException(
+                    "Application not found with ID: " + applicationId
+            );
         }
 
         if (!"ELIGIBLE".equals(application.getEligibilityStatus())) {
-            return null;
+            throw new RuntimeException(
+                    "Verification cannot be created. Application is INELIGIBLE."
+            );
         }
 
         verification.setApplication(application);
 
         return verificationRepository.save(verification);
     }
-
     public Verification approveVerification(Long id) {
 
         Verification verification =

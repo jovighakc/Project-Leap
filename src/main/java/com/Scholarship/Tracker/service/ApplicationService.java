@@ -38,8 +38,16 @@ public class ApplicationService {
         Scheme scheme =
                 schemeRepository.findById(schemeId).orElse(null);
 
-        if (student == null || scheme == null) {
-            return null;
+        if (student == null) {
+            throw new RuntimeException(
+                    "Student not found with ID: " + studentId
+            );
+        }
+
+        if (scheme == null) {
+            throw new RuntimeException(
+                    "Scholarship scheme not found with ID: " + schemeId
+            );
         }
 
         application.setStudent(student);
@@ -97,11 +105,15 @@ public class ApplicationService {
                 applicationRepository.findById(id).orElse(null);
 
         if (application == null) {
-            return null;
+            throw new RuntimeException(
+                    "Application not found with ID: " + id
+            );
         }
 
         if (!"APPROVED".equals(application.getApplicationStatus())) {
-            return null;
+            throw new RuntimeException(
+                    "Disbursement cannot be completed. Application must be APPROVED first."
+            );
         }
 
         application.setDisbursementStatus("COMPLETED");
