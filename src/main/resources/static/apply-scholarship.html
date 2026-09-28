@@ -190,7 +190,7 @@
 
               if (list.length === 0) {
                 scholarshipSelect.innerHTML = '<option value="">No scholarships available</option>';
-                scholarshipError.textContent = 'No scholarship schemes are currently available.';
+                scholarshipError.textContent = 'No scholarship schemes are available yet. Please ask the admin to add a scholarship first.';
                 scholarshipError.classList.remove('hidden');
                 return;
               }
@@ -215,6 +215,7 @@
           }
 
           scholarshipSelect.innerHTML = '<option value="">No scholarships available</option>';
+          scholarshipError.textContent = 'No scholarship schemes are available yet. Please ask the admin to add a scholarship first.';
           scholarshipError.classList.remove('hidden');
         }
 

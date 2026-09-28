@@ -1,119 +1,487 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Register | ScholarTrack</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header class="topbar">
-      <div class="container nav-wrap">
-        <a href="index.html" class="brand">🎓 ScholarTrack</a>
-        <nav class="nav-links" aria-label="Main navigation">
-          <a href="index.html">Home</a>
-          <a href="schemes.html">Scholarships</a>
-          <a href="student-login.html">Login</a>
-          <a href="student-register.html" class="active">Register</a>
-        </nav>
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>Register | ScholarTrack</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin
+  />
+
+  <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"
+  />
+
+  <link
+          rel="stylesheet"
+          href="style.css"
+  />
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+  <div class="container nav-wrap">
+
+    <a
+            href="index.html"
+            class="brand"
+    >
+      🎓 ScholarTrack
+    </a>
+
+
+    <nav
+            class="nav-links"
+            aria-label="Main navigation"
+    >
+
+      <a href="index.html">
+        Home
+      </a>
+
+      <a href="schemes.html">
+        Scholarships
+      </a>
+
+      <a href="student-login.html">
+        Login
+      </a>
+
+      <a
+              href="student-register.html"
+              class="active"
+      >
+        Register
+      </a>
+
+    </nav>
+
+  </div>
+
+</header>
+
+
+
+<main class="auth-page">
+
+  <div class="container auth-shell">
+
+    <div class="auth-card">
+
+
+      <div class="auth-header">
+
+                <span class="eyebrow dark">
+                    Create account
+                </span>
+
+        <h1>
+          Student Registration
+        </h1>
+
       </div>
-    </header>
 
-    <main class="auth-page">
-      <div class="container auth-shell">
-        <div class="auth-card">
-          <div class="auth-header">
-            <span class="eyebrow dark">Create account</span>
-            <h1>Student Registration</h1>
-          </div>
 
-          <form id="registerForm" class="auth-form">
-            <div class="field-grid">
-              <label>
-                <span>Name</span>
-                <input type="text" id="name" name="name" placeholder="Enter your full name" required />
-              </label>
 
-              <label>
-                <span>Email</span>
-                <input type="email" id="email" name="email" placeholder="Enter your email" required />
-              </label>
+      <form
+              id="registerForm"
+              class="auth-form"
+      >
 
-              <label>
-                <span>Phone</span>
-                <input type="tel" id="phone" name="phone" placeholder="Enter phone number" required />
-              </label>
 
-              <label>
-                <span>Marks</span>
-                <input type="number" id="marks" name="marks" step="0.01" min="0" placeholder="Enter your marks" required />
-              </label>
+        <div class="field-grid">
 
-              <label class="full-width">
-                <span>Annual Income</span>
-                <input type="number" id="annualIncome" name="annualIncome" step="0.01" min="0" placeholder="Enter annual income" required />
-              </label>
-            </div>
 
-            <button type="submit" class="btn btn-primary btn-block">Register</button>
-          </form>
+          <!-- NAME -->
 
-          <div id="registerMessage" class="status-box hidden" aria-live="polite"></div>
+          <label>
 
-          <p class="auth-prompt">
-            Already registered? <a href="student-login.html">Login</a>
-          </p>
+                        <span>
+                            Name
+                        </span>
+
+            <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Enter your full name"
+                    required
+            />
+
+          </label>
+
+
+
+          <!-- EMAIL -->
+
+          <label>
+
+                        <span>
+                            Email
+                        </span>
+
+            <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    required
+            />
+
+          </label>
+
+
+
+          <!-- PHONE -->
+
+          <label>
+
+                        <span>
+                            Phone
+                        </span>
+
+            <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    placeholder="Enter phone number"
+                    required
+            />
+
+          </label>
+
+
+
+          <!-- NEW PASSWORD -->
+
+          <label>
+
+                        <span>
+                            New Password
+                        </span>
+
+            <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Create a password"
+                    minlength="6"
+                    required
+            />
+
+          </label>
+
+
+
+          <!-- CONFIRM PASSWORD -->
+
+          <label>
+
+                        <span>
+                            Confirm Password
+                        </span>
+
+            <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    placeholder="Confirm your password"
+                    minlength="6"
+                    required
+            />
+
+          </label>
+
+
         </div>
-      </div>
-    </main>
 
-    <script src="script.js"></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const form = document.getElementById('registerForm');
-        const messageBox = document.getElementById('registerMessage');
 
-        form.addEventListener('submit', async (event) => {
-          event.preventDefault();
-          const payload = {
-            name: document.getElementById('name').value.trim(),
-            email: document.getElementById('email').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
-            marks: Number(document.getElementById('marks').value),
-            annualIncome: Number(document.getElementById('annualIncome').value)
-          };
 
-          if (!payload.name || !payload.email || !payload.phone || Number.isNaN(payload.marks) || Number.isNaN(payload.annualIncome)) {
-            showMessage(messageBox, 'Please fill in all fields correctly.', 'error');
-            return;
-          }
+        <button
+                type="submit"
+                class="btn btn-primary btn-block"
+        >
+          Register
+        </button>
 
-          try {
-            showMessage(messageBox, 'Registering student...', 'loading');
-            const result = await apiRequest('/students', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
 
-            showMessage(
-              messageBox,
-              `Student registered successfully!<br>Student ID: ${result && result.id ? result.id : 'N/A'}`,
-              'success'
+      </form>
+
+
+
+      <div
+              id="registerMessage"
+              class="status-box hidden"
+              aria-live="polite"
+      ></div>
+
+
+
+      <p class="auth-prompt">
+
+        Already registered?
+
+        <a href="student-login.html">
+          Login
+        </a>
+
+      </p>
+
+
+    </div>
+
+  </div>
+
+</main>
+
+
+
+<script src="script.js"></script>
+
+
+
+<script>
+
+  document.addEventListener(
+          'DOMContentLoaded',
+          () => {
+
+
+            const form =
+                    document.getElementById(
+                            'registerForm'
+                    );
+
+
+            const messageBox =
+                    document.getElementById(
+                            'registerMessage'
+                    );
+
+
+
+            form.addEventListener(
+                    'submit',
+                    async (event) => {
+
+                      event.preventDefault();
+
+
+
+                      const name =
+                              document
+                                      .getElementById('name')
+                                      .value
+                                      .trim();
+
+
+                      const email =
+                              document
+                                      .getElementById('email')
+                                      .value
+                                      .trim();
+
+
+                      const phone =
+                              document
+                                      .getElementById('phone')
+                                      .value
+                                      .trim();
+
+
+                      const password =
+                              document
+                                      .getElementById('password')
+                                      .value;
+
+
+                      const confirmPassword =
+                              document
+                                      .getElementById('confirmPassword')
+                                      .value;
+
+
+
+                      /* BASIC VALIDATION */
+
+                      if (
+                              !name ||
+                              !email ||
+                              !phone ||
+                              !password ||
+                              !confirmPassword
+                      ) {
+
+                        showMessage(
+                                messageBox,
+                                'Please fill in all fields.',
+                                'error'
+                        );
+
+                        return;
+                      }
+
+
+
+                      /* PASSWORD LENGTH */
+
+                      if (password.length < 6) {
+
+                        showMessage(
+                                messageBox,
+                                'Password must contain at least 6 characters.',
+                                'error'
+                        );
+
+                        return;
+                      }
+
+
+
+                      /* PASSWORD MATCH */
+
+                      if (
+                              password !==
+                              confirmPassword
+                      ) {
+
+                        showMessage(
+                                messageBox,
+                                'New Password and Confirm Password do not match.',
+                                'error'
+                        );
+
+                        return;
+                      }
+
+
+
+                      try {
+
+
+                        showMessage(
+                                messageBox,
+                                'Registering student...',
+                                'loading'
+                        );
+
+
+
+                        /*
+                         * Marks and Annual Income
+                         * are NOT sent during registration.
+                         */
+
+                        const payload = {
+
+                          name: name,
+
+                          email: email,
+
+                          phone: phone,
+
+                          password: password
+
+                        };
+
+
+
+                        const result =
+                                await apiRequest(
+                                        '/students',
+                                        {
+
+                                          method: 'POST',
+
+                                          headers: {
+                                            'Content-Type':
+                                                    'application/json'
+                                          },
+
+                                          body:
+                                                  JSON.stringify(
+                                                          payload
+                                                  )
+
+                                        }
+                                );
+
+
+
+                        showMessage(
+
+                                messageBox,
+
+                                `Student registered successfully!<br>
+                         Student ID:
+                         ${
+                                        result && result.id
+                                                ? result.id
+                                                : 'N/A'
+                                }`,
+
+                                'success'
+
+                        );
+
+
+
+                        form.reset();
+
+
+
+                        setTimeout(
+                                () => {
+
+                                  window.location.href =
+                                          'student-login.html';
+
+                                },
+                                1400
+                        );
+
+
+
+                      } catch (error) {
+
+
+                        showMessage(
+
+                                messageBox,
+
+                                error.message ||
+                                'Unable to register student right now.',
+
+                                'error'
+
+                        );
+
+                      }
+
+                    }
             );
 
-            form.reset();
-            setTimeout(() => {
-              window.location.href = 'student-login.html';
-            }, 1400);
-          } catch (error) {
-            showMessage(messageBox, error.message || 'Unable to register student right now.', 'error');
           }
-        });
-      });
-    </script>
-  </body>
+  );
+
+</script>
+
+
+</body>
 </html>
