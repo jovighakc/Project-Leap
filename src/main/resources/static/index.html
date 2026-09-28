@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ScholarTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav-wrap">
+        <a href="index.html" class="brand">🎓 ScholarTrack</a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="index.html" class="active">Home</a>
+          <a href="schemes.html">Scholarships</a>
+          <a href="student-login.html">Student Login</a>
+          <a href="student-register.html">Student Register</a>
+          <a href="admin-login.html">Admin Login</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container hero-grid">
+          <div class="hero-copy">
+            <span class="eyebrow">SMART SCHOLARSHIP MANAGEMENT</span>
+            <h1>Find the Right Scholarship for Your Future</h1>
+            <p>
+              ScholarTrack helps students discover scholarship schemes, check
+              eligibility, apply online and track their application status
+              easily.
+            </p>
+            <div class="hero-actions">
+              <a href="student-register.html" class="btn btn-primary">Register Now</a>
+              <a href="student-login.html" class="btn btn-secondary">Student Login</a>
+              <a href="admin-login.html" class="btn btn-secondary">Admin Portal</a>
+            </div>
+          </div>
+          <div class="hero-panel">
+            <div class="mini-card">
+              <span class="mini-label">Active Opportunities</span>
+              <strong id="schemeCount">Loading...</strong>
+            </div>
+            <div class="mini-card highlight">
+              <span class="mini-label">Student Support</span>
+              <strong>Fast & Secure</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="journey">
+        <div class="container">
+          <div class="section-heading center">
+            <span class="eyebrow dark">Simple Scholarship Journey</span>
+          </div>
+          <div class="journey-flow">
+            <div class="step">Register</div>
+            <div class="arrow">↓</div>
+            <div class="step">Check Eligibility</div>
+            <div class="arrow">↓</div>
+            <div class="step">Apply</div>
+            <div class="arrow">↓</div>
+            <div class="step">Document Verification</div>
+            <div class="arrow">↓</div>
+            <div class="step">Approval</div>
+            <div class="arrow">↓</div>
+            <div class="step">Disbursement</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="features">
+        <div class="container">
+          <div class="section-heading center">
+            <span class="eyebrow dark">Why Students Choose ScholarTrack</span>
+          </div>
+          <div class="feature-grid">
+            <article class="feature-card">
+              <div class="feature-icon">🎓</div>
+              <h3>Scholarship Schemes</h3>
+              <p>Discover available scholarships.</p>
+            </article>
+            <article class="feature-card">
+              <div class="feature-icon">📝</div>
+              <h3>Easy Application</h3>
+              <p>Apply for eligible scholarships online.</p>
+            </article>
+            <article class="feature-card">
+              <div class="feature-icon">📊</div>
+              <h3>Track Application</h3>
+              <p>Track verification, approval and disbursement.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

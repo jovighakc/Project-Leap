@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Register | ScholarTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav-wrap">
+        <a href="index.html" class="brand">🎓 ScholarTrack</a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="index.html">Home</a>
+          <a href="schemes.html">Scholarships</a>
+          <a href="admin-login.html">Admin Login</a>
+          <a href="admin-register.html" class="active">Admin Register</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="auth-page">
+      <div class="container auth-shell">
+        <div class="auth-card">
+          <div class="auth-header">
+            <span class="eyebrow dark">Create admin access</span>
+            <h1>Admin Registration</h1>
+          </div>
+
+          <form id="adminRegisterForm" class="auth-form">
+            <label>
+              <span>Name</span>
+              <input type="text" id="adminName" placeholder="Enter full name" required />
+            </label>
+
+            <label>
+              <span>Email</span>
+              <input type="email" id="adminEmail" placeholder="Enter admin email" required />
+            </label>
+
+            <label>
+              <span>Password</span>
+              <input type="password" id="adminPassword" placeholder="Create password" required />
+            </label>
+
+            <button type="submit" class="btn btn-primary btn-block">Create Admin</button>
+          </form>
+
+          <div id="adminRegisterMessage" class="status-box hidden" aria-live="polite"></div>
+
+          <p class="auth-prompt">
+            Already have access? <a href="admin-login.html">Login</a>
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('adminRegisterForm');
+        const messageBox = document.getElementById('adminRegisterMessage');
+
+        form.addEventListener('submit', async (event) => {
+          event.preventDefault();
+
+          const payload = {
+            name: document.getElementById('adminName').value.trim(),
+            email: document.getElementById('adminEmail').value.trim(),
+            password: document.getElementById('adminPassword').value
+          };
+
+          if (!payload.name || !payload.email || !payload.password) {
+            showMessage(messageBox, 'Please fill in all admin fields.', 'error');
+            return;
+          }
+
+          try {
+            showMessage(messageBox, 'Creating admin account...', 'loading');
+            const result = await apiRequest('/admins', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+
+            showMessage(messageBox, `Admin created successfully!<br>Admin ID: ${result && result.id ? result.id : 'N/A'}`, 'success');
+            form.reset();
+            setTimeout(() => {
+              window.location.href = 'admin-login.html';
+            }, 1200);
+          } catch (error) {
+            showMessage(messageBox, error.message || 'Unable to create admin right now.', 'error');
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

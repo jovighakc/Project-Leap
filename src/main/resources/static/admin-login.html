@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login | ScholarTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav-wrap">
+        <a href="index.html" class="brand">🎓 ScholarTrack</a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="index.html">Home</a>
+          <a href="schemes.html">Scholarships</a>
+          <a href="admin-login.html" class="active">Admin Login</a>
+          <a href="admin-register.html">Admin Register</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="auth-page">
+      <div class="container auth-shell">
+        <div class="auth-card">
+          <div class="auth-header">
+            <span class="eyebrow dark">Secure access</span>
+            <h1>Admin Login</h1>
+          </div>
+
+          <form id="adminLoginForm" class="auth-form">
+            <label>
+              <span>Email</span>
+              <input type="email" id="adminEmail" placeholder="Enter admin email" required />
+            </label>
+
+            <label>
+              <span>Password</span>
+              <input type="password" id="adminPassword" placeholder="Enter password" required />
+            </label>
+
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+          </form>
+
+          <div id="adminLoginMessage" class="status-box hidden" aria-live="polite"></div>
+
+          <p class="auth-prompt">
+            Need admin access? <a href="admin-register.html">Create account</a>
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('adminLoginForm');
+        const messageBox = document.getElementById('adminLoginMessage');
+
+        form.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          const email = document.getElementById('adminEmail').value.trim();
+          const password = document.getElementById('adminPassword').value;
+
+          if (!email || !password) {
+            showMessage(messageBox, 'Please enter both email and password.', 'error');
+            return;
+          }
+
+          try {
+            showMessage(messageBox, 'Checking admin credentials...', 'loading');
+            const admin = await apiRequest('/admins/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password })
+            });
+
+            localStorage.setItem('adminId', String(admin.id));
+            localStorage.setItem('adminName', admin.name || '');
+            localStorage.setItem('adminEmail', admin.email || '');
+
+            showMessage(messageBox, 'Login successful. Redirecting...', 'success');
+            setTimeout(() => {
+              window.location.href = 'verification-admin.html';
+            }, 600);
+          } catch (error) {
+            showMessage(messageBox, error.message || 'Unable to login right now.', 'error');
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

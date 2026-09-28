@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard | ScholarTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav-wrap">
+        <a href="index.html" class="brand">🎓 ScholarTrack</a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="index.html">Home</a>
+          <a href="schemes.html">Scholarships</a>
+          <a href="student-dashboard.html" class="active">Dashboard</a>
+          <a href="status.html">My Status</a>
+          <button class="nav-logout" id="logoutButton" type="button">Logout</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="dashboard-page">
+      <div class="container">
+        <section class="dashboard-header">
+          <div>
+            <span class="eyebrow dark">STUDENT PORTAL</span>
+            <h1>Welcome, <span id="studentNameDisplay">Student</span> 👋</h1>
+            <p>Manage your scholarship applications and track your progress.</p>
+          </div>
+        </section>
+
+        <section class="student-profile-card">
+          <div class="profile-header-row">
+            <h2>Student Information</h2>
+          </div>
+          <div class="info-grid">
+            <div>
+              <label>Student Name</label>
+              <p id="studentName">--</p>
+            </div>
+            <div>
+              <label>Student ID</label>
+              <p id="studentId">--</p>
+            </div>
+            <div>
+              <label>Email</label>
+              <p id="studentEmail">--</p>
+            </div>
+            <div>
+              <label>Phone</label>
+              <p id="studentPhone">--</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="dashboard-grid">
+          <article class="dashboard-card">
+            <div class="card-icon">🎓</div>
+            <h3>Scholarships</h3>
+            <p>Explore available scholarship schemes and check your eligibility.</p>
+            <a href="schemes.html" class="btn btn-primary">View Scholarships</a>
+          </article>
+
+          <article class="dashboard-card">
+            <div class="card-icon">📝</div>
+            <h3>Apply for Scholarship</h3>
+            <p>Select an eligible scholarship scheme and submit your application.</p>
+            <a href="apply-scholarship.html" class="btn btn-primary">Apply Now</a>
+          </article>
+
+          <article class="dashboard-card">
+            <div class="card-icon">📊</div>
+            <h3>Application Status</h3>
+            <p>Track your application, verification, approval and disbursement status.</p>
+            <a href="status.html" class="btn btn-primary">View Status</a>
+          </article>
+
+          <article class="dashboard-card">
+            <div class="card-icon">👤</div>
+            <h3>My Profile</h3>
+            <p>View your registered student information.</p>
+            <a href="profile.html" class="btn btn-primary">View Profile</a>
+          </article>
+        </section>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        requireAuth();
+        const student = getCurrentStudent();
+
+        document.getElementById('studentNameDisplay').textContent = student.name || 'Student';
+        document.getElementById('studentName').textContent = student.name || '--';
+        document.getElementById('studentId').textContent = student.studentId || '--';
+        document.getElementById('studentEmail').textContent = student.email || '--';
+        document.getElementById('studentPhone').textContent = student.phone || '--';
+      });
+    </script>
+  </body>
+</html>

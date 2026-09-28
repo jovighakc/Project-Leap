@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scholarships | ScholarTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav-wrap">
+        <a href="index.html" class="brand">🎓 ScholarTrack</a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="index.html">Home</a>
+          <a href="schemes.html" class="active">Scholarships</a>
+          <a href="student-login.html">Login</a>
+          <a href="student-register.html">Register</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="container">
+        <section class="page-header">
+          <span class="eyebrow dark">Available scholarships</span>
+          <h1>Scholarship Schemes</h1>
+          <p>Browse compatible scholarship opportunities and apply online.</p>
+        </section>
+
+        <div id="schemesLoading" class="status-box info">Loading scholarship schemes...</div>
+        <div id="schemesError" class="status-box hidden error"></div>
+        <div id="schemesGrid" class="card-grid"></div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+        const loadingBox = document.getElementById('schemesLoading');
+        const errorBox = document.getElementById('schemesError');
+        const grid = document.getElementById('schemesGrid');
+
+        try {
+          loadingBox.classList.remove('hidden');
+          errorBox.classList.add('hidden');
+          const schemes = await apiRequest('/schemes');
+
+          if (!Array.isArray(schemes) || schemes.length === 0) {
+            grid.innerHTML = '<div class="empty-state">No scholarship schemes available right now.</div>';
+            loadingBox.classList.add('hidden');
+            return;
+          }
+
+          grid.innerHTML = schemes.map((scheme) => `
+            <article class="scheme-card">
+              <span class="pill">Scholarship</span>
+              <h3>${escapeHtml(scheme.schemeName || 'Scholarship')}</h3>
+              <p>${escapeHtml(scheme.description || 'No description provided.')}</p>
+              <ul class="info-list">
+                <li><strong>Income Limit:</strong> ₹${formatNumber(scheme.incomeLimit)}</li>
+                <li><strong>Minimum Marks:</strong> ${formatNumber(scheme.minimumMarks)}</li>
+                <li><strong>Scholarship Amount:</strong> ₹${formatNumber(scheme.scholarshipAmount)}</li>
+              </ul>
+              <button class="btn btn-primary apply-btn" data-scheme-id="${scheme.id}">Apply Now</button>
+            </article>
+          `).join('');
+
+          document.querySelectorAll('.apply-btn').forEach((button) => {
+            button.addEventListener('click', () => {
+              const studentId = localStorage.getItem('studentId');
+              if (!studentId) {
+                window.location.href = 'student-login.html';
+                return;
+              }
+              window.location.href = `apply-scholarship.html?schemeId=${button.dataset.schemeId}`;
+            });
+          });
+        } catch (error) {
+          loadingBox.classList.add('hidden');
+          errorBox.textContent = 'Unable to load scholarship schemes. Please try again.';
+          errorBox.classList.remove('hidden');
+          grid.innerHTML = '<div class="empty-state">Unable to load scholarship schemes. Please try again.</div>';
+        }
+      });
+    </script>
+  </body>
+</html>

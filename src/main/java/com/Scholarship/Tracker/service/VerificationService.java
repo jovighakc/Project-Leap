@@ -20,68 +20,191 @@ public class VerificationService {
         this.applicationRepository = applicationRepository;
     }
 
+
+    // =========================================
+    // CREATE VERIFICATION
+    // =========================================
+
     public Verification createVerification(
             Long applicationId,
             Verification verification) {
 
+
         Application application =
-                applicationRepository.findById(applicationId).orElse(null);
+                applicationRepository
+                        .findById(applicationId)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Application not found with ID: "
+                                                + applicationId
+                                )
+                        );
 
-        if (application == null) {
+
+        // =========================================
+        // ELIGIBILITY CHECK
+        // =========================================
+
+        if (!"ELIGIBLE".equals(
+                application.getEligibilityStatus())) {
+
             throw new RuntimeException(
-                    "Application not found with ID: " + applicationId
+                    "Verification cannot be created. " +
+                            "Application is not eligible."
             );
         }
 
-        if (!"ELIGIBLE".equals(application.getEligibilityStatus())) {
+
+        // =========================================
+        // APPLICATION STATUS CHECK
+        // =========================================
+
+        if ("REJECTED".equals(
+                application.getApplicationStatus())) {
+
             throw new RuntimeException(
-                    "Verification cannot be created. Application is INELIGIBLE."
+                    "Verification cannot be created. " +
+                            "Application is already rejected."
             );
         }
 
-        verification.setApplication(application);
 
-        return verificationRepository.save(verification);
+        // =========================================
+        // CONNECT APPLICATION
+        // =========================================
+
+        verification.setApplication(
+                application
+        );
+
+
+        // =========================================
+        // INITIAL STATUS
+        // =========================================
+
+        verification.setStatus(
+                "PENDING"
+        );
+
+
+        // =========================================
+        // SAVE
+        // =========================================
+
+        return verificationRepository.save(
+                verification
+        );
     }
-    public Verification approveVerification(Long id) {
+
+
+    // =========================================
+    // APPROVE VERIFICATION
+    // =========================================
+
+    public Verification approveVerification(
+            Long id) {
+
 
         Verification verification =
-                verificationRepository.findById(id).orElse(null);
+                verificationRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Verification not found with ID: "
+                                                + id
+                                )
+                        );
 
-        if (verification == null) {
-            return null;
-        }
 
-        verification.setStatus("APPROVED");
+        // =========================================
+        // APPROVE
+        // =========================================
+
+        verification.setStatus(
+                "APPROVED"
+        );
+
 
         Application application =
                 verification.getApplication();
 
-        application.setApplicationStatus("APPROVED");
 
-        applicationRepository.save(application);
+        application.setApplicationStatus(
+                "APPROVED"
+        );
 
-        return verificationRepository.save(verification);
+
+        // =========================================
+        // SAVE APPLICATION
+        // =========================================
+
+        applicationRepository.save(
+                application
+        );
+
+
+        // =========================================
+        // SAVE VERIFICATION
+        // =========================================
+
+        return verificationRepository.save(
+                verification
+        );
     }
 
-    public Verification rejectVerification(Long id) {
+
+    // =========================================
+    // REJECT VERIFICATION
+    // =========================================
+
+    public Verification rejectVerification(
+            Long id) {
+
 
         Verification verification =
-                verificationRepository.findById(id).orElse(null);
+                verificationRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Verification not found with ID: "
+                                                + id
+                                )
+                        );
 
-        if (verification == null) {
-            return null;
-        }
 
-        verification.setStatus("REJECTED");
+        // =========================================
+        // REJECT
+        // =========================================
+
+        verification.setStatus(
+                "REJECTED"
+        );
+
 
         Application application =
                 verification.getApplication();
 
-        application.setApplicationStatus("REJECTED");
 
-        applicationRepository.save(application);
+        application.setApplicationStatus(
+                "REJECTED"
+        );
 
-        return verificationRepository.save(verification);
+
+        // =========================================
+        // SAVE APPLICATION
+        // =========================================
+
+        applicationRepository.save(
+                application
+        );
+
+
+        // =========================================
+        // SAVE VERIFICATION
+        // =========================================
+
+        return verificationRepository.save(
+                verification
+        );
     }
 }

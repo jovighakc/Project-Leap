@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apply for Scholarship | ScholarTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav-wrap">
+        <a href="index.html" class="brand">🎓 ScholarTrack</a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="index.html">Home</a>
+          <a href="schemes.html">Scholarships</a>
+          <a href="student-dashboard.html">Dashboard</a>
+          <button class="nav-logout" id="logoutButton" type="button">Logout</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="container">
+        <section class="page-header scholarship-header">
+          <span class="eyebrow dark">STUDENT PORTAL</span>
+          <h1>Apply for Scholarship</h1>
+          <p>Enter your academic and financial details to check your scholarship eligibility.</p>
+        </section>
+
+        <div class="form-layout">
+          <div class="panel scholarship-panel">
+            <div id="applicationMessage" class="status-box hidden"></div>
+
+            <form id="scholarshipApplicationForm" novalidate>
+              <section class="form-section">
+                <h2>Student Details</h2>
+                <div class="field-grid">
+                  <div class="field-group">
+                    <label for="studentName">Student Name</label>
+                    <input id="studentName" name="studentName" type="text" readonly />
+                  </div>
+                  <div class="field-group">
+                    <label for="studentId">Student ID</label>
+                    <input id="studentId" name="studentId" type="text" readonly />
+                  </div>
+                </div>
+              </section>
+
+              <section class="form-section">
+                <h2>Scholarship Details</h2>
+                <div class="field-group">
+                  <label for="scholarshipScheme">Scholarship Scheme</label>
+                  <select id="scholarshipScheme" name="scholarshipScheme" required>
+                    <option value="">Select a scholarship</option>
+                  </select>
+                  <div id="scholarshipError" class="inline-error hidden">Unable to load scholarships right now.</div>
+                </div>
+              </section>
+
+              <section class="form-section">
+                <h2>Academic &amp; Financial Details</h2>
+                <div class="field-grid">
+                  <div class="field-group">
+                    <label for="marks">Marks / Percentage</label>
+                    <input id="marks" name="marks" type="number" min="0" max="100" step="0.01" placeholder="e.g. 89.5" required />
+                  </div>
+                  <div class="field-group">
+                    <label for="annualIncome">Annual Family Income (₹)</label>
+                    <input id="annualIncome" name="annualIncome" type="number" min="0" step="0.01" placeholder="e.g. 450000" required />
+                    <small class="helper-text">Enter your total family income for one year.</small>
+                  </div>
+                </div>
+              </section>
+
+              <section class="form-section">
+                <h2>Documents</h2>
+                <div class="upload-grid">
+                  <div class="upload-card">
+                    <div class="upload-header">
+                      <div class="upload-icon">📄</div>
+                      <div>
+                        <h3>Mark Sheet</h3>
+                        <p>Latest academic mark sheet</p>
+                      </div>
+                    </div>
+                    <label class="file-trigger" for="markSheet">Choose File</label>
+                    <input id="markSheet" class="file-input" type="file" accept=".pdf,.jpg,.jpeg,.png" />
+                    <span class="file-name" data-for="markSheet">No file selected</span>
+                  </div>
+
+                  <div class="upload-card">
+                    <div class="upload-header">
+                      <div class="upload-icon">💰</div>
+                      <div>
+                        <h3>Income Certificate</h3>
+                        <p>Official income proof</p>
+                      </div>
+                    </div>
+                    <label class="file-trigger" for="incomeCertificate">Choose File</label>
+                    <input id="incomeCertificate" class="file-input" type="file" accept=".pdf,.jpg,.jpeg,.png" />
+                    <span class="file-name" data-for="incomeCertificate">No file selected</span>
+                  </div>
+
+                  <div class="upload-card">
+                    <div class="upload-header">
+                      <div class="upload-icon">🪪</div>
+                      <div>
+                        <h3>ID Proof</h3>
+                        <p>Government-issued identity document</p>
+                      </div>
+                    </div>
+                    <label class="file-trigger" for="idProof">Choose File</label>
+                    <input id="idProof" class="file-input" type="file" accept=".pdf,.jpg,.jpeg,.png" />
+                    <span class="file-name" data-for="idProof">No file selected</span>
+                  </div>
+
+                  <div class="upload-card">
+                    <div class="upload-header">
+                      <div class="upload-icon">🏦</div>
+                      <div>
+                        <h3>Bank Passbook</h3>
+                        <p>Latest bank account passbook page</p>
+                      </div>
+                    </div>
+                    <label class="file-trigger" for="bankPassbook">Choose File</label>
+                    <input id="bankPassbook" class="file-input" type="file" accept=".pdf,.jpg,.jpeg,.png" />
+                    <span class="file-name" data-for="bankPassbook">No file selected</span>
+                  </div>
+                </div>
+              </section>
+
+              <div class="submit-wrap">
+                <button id="submitApplicationBtn" class="btn btn-primary btn-block" type="submit">Submit Scholarship Application</button>
+              </div>
+            </form>
+
+            <div id="successState" class="success-state hidden" aria-live="polite">
+              <div class="success-badge">✓</div>
+              <p>✓ Scholarship application submitted successfully!</p>
+              <a href="student-dashboard.html" class="back-link">← Back to Dashboard</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+        requireAuth();
+
+        const student = getCurrentStudent();
+        const studentNameInput = document.getElementById('studentName');
+        const studentIdInput = document.getElementById('studentId');
+        const scholarshipSelect = document.getElementById('scholarshipScheme');
+        const scholarshipError = document.getElementById('scholarshipError');
+        const form = document.getElementById('scholarshipApplicationForm');
+        const applicationMessage = document.getElementById('applicationMessage');
+        const submitButton = document.getElementById('submitApplicationBtn');
+        const successState = document.getElementById('successState');
+
+        if (studentNameInput) studentNameInput.value = student.name || '';
+        if (studentIdInput) studentIdInput.value = student.studentId || '';
+
+        document.querySelectorAll('.file-input').forEach((input) => {
+          input.addEventListener('change', () => {
+            const fileName = input.files && input.files[0] ? input.files[0].name : 'No file selected';
+            const fileDisplay = document.querySelector(`.file-name[data-for="${input.id}"]`);
+            if (fileDisplay) {
+              fileDisplay.textContent = fileName;
+            }
+          });
+        });
+
+        async function loadScholarships() {
+          if (!scholarshipSelect) return;
+
+          scholarshipError.classList.add('hidden');
+          scholarshipSelect.innerHTML = '<option value="">Loading scholarships...</option>';
+
+          const endpoints = ['/schemes', '/scholarships'];
+
+          for (const endpoint of endpoints) {
+            try {
+              const schemes = await apiRequest(endpoint);
+              const list = Array.isArray(schemes) ? schemes : [];
+
+              if (list.length === 0) {
+                scholarshipSelect.innerHTML = '<option value="">No scholarships available</option>';
+                scholarshipError.textContent = 'No scholarship schemes are currently available.';
+                scholarshipError.classList.remove('hidden');
+                return;
+              }
+
+              scholarshipSelect.innerHTML = '<option value="">Select a scholarship</option>' + list.map((scheme) => `
+                <option value="${scheme.id}">${escapeHtml(scheme.schemeName || 'Scholarship')}</option>
+              `).join('');
+
+              const params = new URLSearchParams(window.location.search);
+              const selectedSchemeId = params.get('schemeId');
+              if (selectedSchemeId) {
+                const preselectedOption = Array.from(scholarshipSelect.options).find((option) => option.value === String(selectedSchemeId));
+                if (preselectedOption) {
+                  scholarshipSelect.value = String(selectedSchemeId);
+                }
+              }
+
+              return;
+            } catch (error) {
+              scholarshipError.textContent = 'Unable to load scholarship schemes. Please try again later.';
+            }
+          }
+
+          scholarshipSelect.innerHTML = '<option value="">No scholarships available</option>';
+          scholarshipError.classList.remove('hidden');
+        }
+
+        function setInlineMessage(text, type) {
+          if (!applicationMessage) return;
+          showMessage(applicationMessage, text, type);
+        }
+
+        function validateForm() {
+          const studentIdValue = String(student.studentId || document.getElementById('studentId').value || '').trim();
+          const schemeId = scholarshipSelect.value;
+          const marksValue = document.getElementById('marks').value.trim();
+          const annualIncomeValue = document.getElementById('annualIncome').value.trim();
+          const uploadedFiles = document.querySelectorAll('.file-input');
+          const allFilesSelected = Array.from(uploadedFiles).every((input) => input.files && input.files.length > 0);
+
+          if (!studentIdValue) {
+            return 'Student ID is missing. Please log in again.';
+          }
+
+          if (!schemeId) {
+            return 'Please select a scholarship scheme.';
+          }
+
+          if (!marksValue || Number(marksValue) < 0 || Number(marksValue) > 100) {
+            return 'Please enter valid marks between 0 and 100.';
+          }
+
+          if (!annualIncomeValue || Number(annualIncomeValue) < 0) {
+            return 'Please enter your annual family income.';
+          }
+
+          if (!allFilesSelected) {
+            return 'Please upload all four required documents.';
+          }
+
+          return null;
+        }
+
+        if (form) {
+          form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const validationError = validateForm();
+            if (validationError) {
+              setInlineMessage(validationError, 'error');
+              return;
+            }
+
+            const studentId = Number(student.studentId || document.getElementById('studentId').value);
+            const scholarshipId = Number(scholarshipSelect.value);
+            const marks = Number(document.getElementById('marks').value);
+            const annualIncome = Number(document.getElementById('annualIncome').value);
+
+            const payload = {
+              studentId,
+              scholarshipId,
+              marks,
+              annualIncome
+            };
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting...';
+            setInlineMessage('Submitting your scholarship application...', 'loading');
+
+            try {
+              const params = new URLSearchParams({
+                studentId: String(studentId),
+                schemeId: String(scholarshipId),
+                document: 'application-submitted'
+              });
+
+              const response = await fetch(`/applications?${params.toString()}`, {
+                method: 'POST'
+              });
+
+              let result = null;
+              try {
+                result = await response.json();
+              } catch (error) {
+                result = null;
+              }
+
+              if (!response.ok) {
+                const errorText = result && (result.message || result.error)
+                  ? result.message || result.error
+                  : 'Unable to submit scholarship application.';
+                throw new Error(errorText);
+              }
+
+              const applicationId = result && (result.id || result.applicationId || result.application?.id);
+
+              if (!applicationId) {
+                throw new Error('Application created but ID was not returned.');
+              }
+
+              localStorage.setItem('applicationId', String(applicationId));
+
+              setInlineMessage('✓ Scholarship application submitted successfully!', 'success');
+              successState.classList.remove('hidden');
+              submitButton.disabled = true;
+              submitButton.textContent = 'Application Submitted ✓';
+              submitButton.classList.add('btn-success');
+            } catch (error) {
+              submitButton.disabled = false;
+              submitButton.textContent = 'Submit Scholarship Application';
+              setInlineMessage('Unable to submit the scholarship application. Please try again.', 'error');
+            }
+          });
+        }
+
+        await loadScholarships();
+      });
+    </script>
+  </body>
+</html>

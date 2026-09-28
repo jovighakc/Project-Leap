@@ -8,6 +8,7 @@ import com.Scholarship.Tracker.repository.SchemeRepository;
 import com.Scholarship.Tracker.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -27,97 +28,180 @@ public class ApplicationService {
         this.schemeRepository = schemeRepository;
     }
 
+
+    // CREATE APPLICATION
     public Application createApplication(
             Long studentId,
             Long schemeId,
-            Application application) {
+            String document) {
 
         Student student =
-                studentRepository.findById(studentId).orElse(null);
+                studentRepository.findById(studentId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Student not found with ID: "
+                                                + studentId
+                                )
+                        );
 
         Scheme scheme =
-                schemeRepository.findById(schemeId).orElse(null);
+                schemeRepository.findById(schemeId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Scholarship scheme not found with ID: "
+                                                + schemeId
+                                )
+                        );
 
-        if (student == null) {
-            throw new RuntimeException(
-                    "Student not found with ID: " + studentId
-            );
-        }
 
-        if (scheme == null) {
-            throw new RuntimeException(
-                    "Scholarship scheme not found with ID: " + schemeId
-            );
-        }
+        // AUTOMATIC ELIGIBILITY CHECK
+
+        boolean incomeEligible =
+                student.getAnnualIncome()
+                        <= scheme.getIncomeLimit();
+
+        boolean marksEligible =
+                student.getMarks()
+                        >= scheme.getMinimumMarks();
+
+        boolean eligible =
+                incomeEligible && marksEligible;
+
+
+        // CREATE APPLICATION
+
+        Application application =
+                new Application();
 
         application.setStudent(student);
+
         application.setScheme(scheme);
 
-        if (student.getAnnualIncome() <= scheme.getIncomeLimit()
-                && student.getMarks() >= scheme.getMinimumMarks()) {
+        application.setDocument(document);
 
-            application.setEligibilityStatus("ELIGIBLE");
-            application.setApplicationStatus("PENDING");
-            application.setDisbursementStatus("NOT_STARTED");
+
+        // IMPORTANT:
+        // applicationDate is String in your entity
+
+        application.setApplicationDate(
+                LocalDate.now().toString()
+        );
+
+
+        // ELIGIBILITY STATUS
+
+        if (eligible) {
+
+            application.setEligibilityStatus(
+                    "ELIGIBLE"
+            );
+
+            application.setApplicationStatus(
+                    "PENDING"
+            );
 
         } else {
 
-            application.setEligibilityStatus("INELIGIBLE");
-            application.setApplicationStatus("REJECTED");
-            application.setDisbursementStatus("NOT_STARTED");
+            application.setEligibilityStatus(
+                    "NOT_ELIGIBLE"
+            );
+
+            application.setApplicationStatus(
+                    "REJECTED"
+            );
         }
 
-        return applicationRepository.save(application);
+
+        // INITIAL DISBURSEMENT STATUS
+
+        application.setDisbursementStatus(
+                "NOT_STARTED"
+        );
+
+
+        return applicationRepository.save(
+                application
+        );
     }
 
+
+    // GET ALL APPLICATIONS
+
     public List<Application> getAllApplications() {
+
         return applicationRepository.findAll();
     }
 
-    public Application getApplicationById(Long id) {
-        return applicationRepository.findById(id).orElse(null);
+
+    // GET APPLICATION BY ID
+
+    public Application getApplicationById(
+            Long id) {
+
+        return applicationRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Application not found with ID: "
+                                        + id
+                        )
+                );
     }
 
-    public Application updateApplication(
-            Long id,
-            Application application) {
 
-        Application existing =
-                applicationRepository.findById(id).orElse(null);
+    // COMPLETE DISBURSEMENT
 
-        if (existing == null) {
-            return null;
-        }
-
-        existing.setDocument(application.getDocument());
-        existing.setApplicationDate(application.getApplicationDate());
-
-        return applicationRepository.save(existing);
-    }
-
-    public void deleteApplication(Long id) {
-        applicationRepository.deleteById(id);
-    }
-
-    public Application completeDisbursement(Long id) {
+    public Application completeDisbursement(
+            Long id) {
 
         Application application =
-                applicationRepository.findById(id).orElse(null);
+                applicationRepository.findById(id)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Application not found with ID: "
+                                                + id
+                                )
+                        );
 
-        if (application == null) {
+
+        // DISBURSEMENT ONLY AFTER APPROVAL
+
+        if (!"APPROVED".equals(
+                application.getApplicationStatus())) {
+
             throw new RuntimeException(
-                    "Application not found with ID: " + id
+                    "Disbursement cannot be completed. "
+                            + "Application verification is not approved."
             );
         }
 
-        if (!"APPROVED".equals(application.getApplicationStatus())) {
-            throw new RuntimeException(
-                    "Disbursement cannot be completed. Application must be APPROVED first."
-            );
-        }
 
-        application.setDisbursementStatus("COMPLETED");
+        application.setDisbursementStatus(
+                "COMPLETED"
+        );
 
-        return applicationRepository.save(application);
+
+        return applicationRepository.save(
+                application
+        );
+    }
+
+
+    // GET APPLICATIONS BY STUDENT
+
+    public List<Application> getApplicationsByStudent(
+            Long studentId) {
+
+        studentRepository.findById(studentId)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Student not found with ID: "
+                                        + studentId
+                        )
+                );
+
+
+        return applicationRepository
+                .findByStudentId(studentId);
     }
 }
+

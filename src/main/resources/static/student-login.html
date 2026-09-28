@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | ScholarTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav-wrap">
+        <a href="index.html" class="brand">🎓 ScholarTrack</a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="index.html">Home</a>
+          <a href="schemes.html">Scholarships</a>
+          <a href="student-login.html" class="active">Login</a>
+          <a href="student-register.html">Register</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="auth-page">
+      <div class="container auth-shell">
+        <div class="auth-card">
+          <div class="auth-header">
+            <span class="eyebrow dark">Welcome back</span>
+            <h1>Student Login</h1>
+          </div>
+
+          <form id="loginForm" class="auth-form">
+            <label>
+              <span>Email</span>
+              <input type="email" id="email" placeholder="Enter your email" required />
+            </label>
+
+            <label>
+              <span>Phone Number</span>
+              <input type="tel" id="phone" placeholder="Enter your phone number" required />
+            </label>
+
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+          </form>
+
+          <div id="loginMessage" class="status-box hidden" aria-live="polite"></div>
+
+          <p class="auth-prompt">
+            New here? <a href="student-register.html">Register</a>
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('loginForm');
+        const messageBox = document.getElementById('loginMessage');
+
+        form.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          const email = document.getElementById('email').value.trim();
+          const phone = document.getElementById('phone').value.trim();
+
+          if (!email || !phone) {
+            showMessage(messageBox, 'Please enter your email and phone number.', 'error');
+            return;
+          }
+
+          try {
+            showMessage(messageBox, 'Checking student details...', 'loading');
+            const students = await apiRequest('/students');
+            const matchedStudent = (students || []).find((student) => {
+              return String(student.email).trim().toLowerCase() === email.toLowerCase() && String(student.phone).trim() === phone;
+            });
+
+            if (!matchedStudent) {
+              showMessage(messageBox, 'Invalid email or phone number.', 'error');
+              return;
+            }
+
+            localStorage.setItem('studentId', String(matchedStudent.id));
+            localStorage.setItem('studentName', matchedStudent.name || '');
+            localStorage.setItem('studentEmail', matchedStudent.email || '');
+            localStorage.setItem('studentPhone', matchedStudent.phone || '');
+
+            showMessage(messageBox, 'Login successful. Redirecting...', 'success');
+            setTimeout(() => {
+              window.location.href = 'student-dashboard.html';
+            }, 600);
+          } catch (error) {
+            showMessage(messageBox, error.message || 'Unable to login right now.', 'error');
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

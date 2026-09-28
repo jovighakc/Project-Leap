@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Application Status | ScholarTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav-wrap">
+        <a href="index.html" class="brand">🎓 ScholarTrack</a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="index.html">Home</a>
+          <a href="schemes.html">Scholarships</a>
+          <a href="student-dashboard.html">Dashboard</a>
+          <a href="status.html" class="active">My Status</a>
+          <button class="nav-logout" id="logoutButton" type="button">Logout</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="container">
+        <section class="page-header">
+          <span class="eyebrow dark">Application tracking</span>
+          <h1>Application Status</h1>
+          <p>Track your scholarship application, verification and disbursement status.</p>
+        </section>
+
+        <div id="statusLoading" class="status-box info">Loading your application status...</div>
+        <div id="statusError" class="status-box hidden error"></div>
+        <div id="statusContent" class="hidden"></div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+        requireAuth();
+        const studentId = localStorage.getItem('studentId');
+        const loading = document.getElementById('statusLoading');
+        const errorBox = document.getElementById('statusError');
+        const content = document.getElementById('statusContent');
+
+        try {
+          loading.classList.remove('hidden');
+          const applicationList = await apiRequest(`/applications/student/${studentId}`);
+
+          if (!Array.isArray(applicationList) || applicationList.length === 0) {
+            content.innerHTML = '<div class="empty-state">No applications found yet.</div>';
+            content.classList.remove('hidden');
+            loading.classList.add('hidden');
+            return;
+          }
+
+          const app = applicationList[0];
+          const verification = await fetchVerificationForApplication(app.id);
+
+          content.innerHTML = `
+            <div class="status-summary">
+              <div class="summary-card">
+                <span class="pill">Application ID</span>
+                <h3>#${app.id}</h3>
+                <p><strong>Scholarship:</strong> ${escapeHtml(app.scheme ? app.scheme.schemeName : 'N/A')}</p>
+                <p><strong>Application Date:</strong> ${escapeHtml(app.applicationDate || 'N/A')}</p>
+              </div>
+            </div>
+
+            <div class="timeline">
+              <div class="timeline-item complete">
+                <span class="dot">✓</span>
+                <div>
+                  <h4>Application Submitted</h4>
+                  <p>${escapeHtml(app.applicationStatus || 'PENDING')}</p>
+                </div>
+              </div>
+
+              <div class="timeline-item ${String(verification?.status || app.applicationStatus || '').toUpperCase() === 'APPROVED' || String(verification?.status || '').toUpperCase() === 'REJECTED' ? 'complete' : 'pending'}">
+                <span class="dot">${String(verification?.status || app.applicationStatus || '').toUpperCase() === 'APPROVED' || String(verification?.status || '').toUpperCase() === 'REJECTED' ? '✓' : '•'}</span>
+                <div>
+                  <h4>Document Verification</h4>
+                  <p>${escapeHtml(verification?.status || 'PENDING')}</p>
+                </div>
+              </div>
+
+              <div class="timeline-item ${String(app.applicationStatus || '').toUpperCase() === 'APPROVED' ? 'complete' : 'pending'}">
+                <span class="dot">${String(app.applicationStatus || '').toUpperCase() === 'APPROVED' ? '✓' : '•'}</span>
+                <div>
+                  <h4>Verification Status</h4>
+                  <p>${escapeHtml(app.applicationStatus || 'PENDING')}</p>
+                </div>
+              </div>
+
+              <div class="timeline-item ${String(app.disbursementStatus || '').toUpperCase() === 'COMPLETED' ? 'complete' : 'pending'}">
+                <span class="dot">${String(app.disbursementStatus || '').toUpperCase() === 'COMPLETED' ? '✓' : '•'}</span>
+                <div>
+                  <h4>Approval Status</h4>
+                  <p>${escapeHtml(app.applicationStatus || 'PENDING')}</p>
+                </div>
+              </div>
+
+              <div class="timeline-item ${String(app.disbursementStatus || '').toUpperCase() === 'COMPLETED' ? 'complete' : 'pending'}">
+                <span class="dot">${String(app.disbursementStatus || '').toUpperCase() === 'COMPLETED' ? '✓' : '•'}</span>
+                <div>
+                  <h4>Disbursement Status</h4>
+                  <p>${escapeHtml(app.disbursementStatus || 'NOT_STARTED')}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="verification-card">
+              <h3>Verification Details</h3>
+              <div class="info-grid two-col">
+                <div>
+                  <label>Verification Status</label>
+                  <p class="verification-status ${String(verification?.status || '').toUpperCase() === 'APPROVED' ? 'approved' : String(verification?.status || '').toUpperCase() === 'REJECTED' ? 'rejected' : ''}">${escapeHtml(verification?.status || 'PENDING')}</p>
+                </div>
+                <div>
+                  <label>Verifier Name</label>
+                  <p>${escapeHtml(verification?.verifierName || 'N/A')}</p>
+                </div>
+                <div class="full-width">
+                  <label>Remarks</label>
+                  <p>${escapeHtml(verification?.remarks || 'No remarks provided yet.')}</p>
+                </div>
+              </div>
+            </div>
+          `;
+
+          content.classList.remove('hidden');
+          loading.classList.add('hidden');
+        } catch (error) {
+          loading.classList.add('hidden');
+          errorBox.textContent = 'Unable to load application status. Please try again.';
+          errorBox.classList.remove('hidden');
+        }
+      });
+    </script>
+  </body>
+</html>

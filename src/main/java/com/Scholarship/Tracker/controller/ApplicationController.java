@@ -3,7 +3,7 @@ package com.Scholarship.Tracker.controller;
 import com.Scholarship.Tracker.entity.Application;
 import com.Scholarship.Tracker.service.ApplicationService;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
+
 import java.util.List;
 
 @RestController
@@ -12,71 +12,80 @@ public class ApplicationController {
 
     private final ApplicationService applicationService;
 
-    public ApplicationController(ApplicationService applicationService) {
-        this.applicationService = applicationService;
+    public ApplicationController(
+            ApplicationService applicationService) {
+
+        this.applicationService =
+                applicationService;
     }
+
+
+    // =========================================
+    // CREATE APPLICATION
+    // =========================================
 
     @PostMapping
     public Application createApplication(
             @RequestParam Long studentId,
             @RequestParam Long schemeId,
-            @RequestBody Application application) {
+            @RequestParam String document) {
 
         return applicationService.createApplication(
                 studentId,
                 schemeId,
-                application
+                document
         );
     }
 
+
+    // =========================================
+    // GET ALL APPLICATIONS
+    // =========================================
+
     @GetMapping
     public List<Application> getAllApplications() {
-        return applicationService.getAllApplications();
+
+        return applicationService
+                .getAllApplications();
     }
+
+
+    // =========================================
+    // GET APPLICATION BY ID
+    // =========================================
 
     @GetMapping("/{id}")
     public Application getApplicationById(
             @PathVariable Long id) {
 
-        return applicationService.getApplicationById(id);
+        return applicationService
+                .getApplicationById(id);
     }
 
-    @PutMapping("/{id}")
-    public Application updateApplication(
-            @PathVariable Long id,
-            @RequestBody Application application) {
 
-        return applicationService.updateApplication(
-                id,
-                application
-        );
-    }
+    // =========================================
+    // COMPLETE DISBURSEMENT
+    // =========================================
 
-    @DeleteMapping("/{id}")
-    public String deleteApplication(
+    @PutMapping("/{id}/disburse")
+    public Application completeDisbursement(
             @PathVariable Long id) {
 
-        applicationService.deleteApplication(id);
-
-        return "Application deleted successfully";
+        return applicationService
+                .completeDisbursement(id);
     }
 
-    @PutMapping("/{id}/disbursement")
-    public ResponseEntity<?> completeDisbursement(
-            @PathVariable Long id) {
 
-        try {
+    // =========================================
+    // GET STUDENT APPLICATIONS
+    // =========================================
 
-            Application application =
-                    applicationService.completeDisbursement(id);
+    @GetMapping("/student/{studentId}")
+    public List<Application> getApplicationsByStudent(
+            @PathVariable Long studentId) {
 
-            return ResponseEntity.ok(application);
-
-        } catch (RuntimeException e) {
-
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+        return applicationService
+                .getApplicationsByStudent(studentId);
     }
 }
+

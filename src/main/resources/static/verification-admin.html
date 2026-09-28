@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verification - ScholarTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav-wrap">
+        <a href="index.html" class="brand">🎓 ScholarTrack</a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="index.html">Home</a>
+          <a href="schemes.html">Scholarships</a>
+          <a href="verification-admin.html" class="active">Verification</a>
+          <button class="nav-logout" id="logoutButton" type="button">Logout</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="verification-page">
+      <div class="verification-header">
+        <div class="verification-icon">🔍</div>
+        <div>
+          <p class="tag">ADMIN / VERIFIER</p>
+          <h1>Document Verification</h1>
+          <p>Review eligible scholarship applications and approve or reject their verification.</p>
+        </div>
+      </div>
+
+      <section class="verification-card">
+        <h2>Applications to Verify</h2>
+        <p class="section-description">Review each submitted scholarship request and open the verification for the selected application.</p>
+        <div id="applicationList" class="application-list"></div>
+      </section>
+
+      <section class="verification-card">
+        <h2>Create Verification</h2>
+        <p class="section-description">Enter the application details to start the verification process.</p>
+
+        <form id="verificationForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="applicationId">Application ID</label>
+              <select id="applicationId" required>
+                <option value="">Select an application</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="verifierName">Verifier Name</label>
+              <input type="text" id="verifierName" placeholder="Enter verifier name" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="remarks">Remarks</label>
+            <textarea id="remarks" rows="4" placeholder="Enter verification remarks"></textarea>
+          </div>
+
+          <button type="submit" class="primary-action-btn">🔍 Start Verification</button>
+        </form>
+
+        <div id="createMessage" class="verification-message"></div>
+      </section>
+
+      <section id="verificationResult" class="verification-card result-card" style="display:none;">
+        <div class="result-header">
+          <div>
+            <p class="small-label">VERIFICATION ID</p>
+            <h2 id="verificationId">-</h2>
+          </div>
+          <span id="verificationStatus" class="status-badge pending">PENDING</span>
+        </div>
+
+        <div class="verification-details">
+          <div class="detail-box">
+            <span>Application ID</span>
+            <strong id="resultApplicationId">-</strong>
+          </div>
+
+          <div class="detail-box">
+            <span>Verifier</span>
+            <strong id="resultVerifier">-</strong>
+          </div>
+
+          <div class="detail-box">
+            <span>Remarks</span>
+            <strong id="resultRemarks">-</strong>
+          </div>
+        </div>
+
+        <div class="decision-section">
+          <h3>Verification Decision</h3>
+          <p>After checking the submitted documents, choose the appropriate action.</p>
+
+          <div class="decision-buttons">
+            <button type="button" id="approveBtn" class="approve-btn">✓ Approve Verification</button>
+            <button type="button" id="rejectBtn" class="reject-btn">✕ Reject Verification</button>
+          </div>
+        </div>
+
+        <div id="decisionMessage" class="verification-message"></div>
+      </section>
+
+      <section class="verification-card">
+        <h2>Current Scholarship Schemes</h2>
+        <p class="section-description">Add or review the scholarship opportunities available to students.</p>
+        <div id="schemeList" class="scholarship-list"></div>
+      </section>
+
+      <section class="verification-card">
+        <h2>Add Scholarship</h2>
+        <p class="section-description">Create a new scholarship scheme for new student applications.</p>
+
+        <form id="scholarshipForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="schemeName">Scholarship Name</label>
+              <input type="text" id="schemeName" placeholder="Enter scholarship name" required />
+            </div>
+
+            <div class="form-group">
+              <label for="scholarshipAmount">Scholarship Amount (₹)</label>
+              <input type="number" id="scholarshipAmount" min="0" step="0.01" placeholder="Enter amount" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="incomeLimit">Income Limit (₹)</label>
+              <input type="number" id="incomeLimit" min="0" step="0.01" placeholder="Enter income limit" required />
+            </div>
+
+            <div class="form-group">
+              <label for="minimumMarks">Minimum Marks</label>
+              <input type="number" id="minimumMarks" min="0" max="100" step="0.01" placeholder="Enter minimum marks" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" rows="4" placeholder="Enter scholarship description"></textarea>
+          </div>
+
+          <button type="submit" class="primary-action-btn">➕ Add Scholarship</button>
+        </form>
+
+        <div id="schemeMessage" class="verification-message"></div>
+      </section>
+
+      <section class="verification-card process-card">
+        <h2>Verification Process</h2>
+        <div class="verification-steps">
+          <div class="verification-step">
+            <span>1</span>
+            <div>
+              <strong>Application Submitted</strong>
+              <p>Student submits scholarship application.</p>
+            </div>
+          </div>
+
+          <div class="verification-step">
+            <span>2</span>
+            <div>
+              <strong>Document Verification</strong>
+              <p>Verifier checks the submitted documents.</p>
+            </div>
+          </div>
+
+          <div class="verification-step">
+            <span>3</span>
+            <div>
+              <strong>Approval / Rejection</strong>
+              <p>Application is approved or rejected.</p>
+            </div>
+          </div>
+
+          <div class="verification-step">
+            <span>4</span>
+            <div>
+              <strong>Disbursement</strong>
+              <p>Approved scholarship can proceed to disbursement.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+        requireAdminAuth();
+        attachLogout();
+
+        const applicationList = document.getElementById('applicationList');
+        const schemeList = document.getElementById('schemeList');
+        const applicationSelect = document.getElementById('applicationId');
+        const verificationForm = document.getElementById('verificationForm');
+        const scholarshipForm = document.getElementById('scholarshipForm');
+        const createMessage = document.getElementById('createMessage');
+        const schemeMessage = document.getElementById('schemeMessage');
+        const verificationResult = document.getElementById('verificationResult');
+        const decisionMessage = document.getElementById('decisionMessage');
+        let currentVerificationId = null;
+
+        function showMessage(element, message, type) {
+          if (!element) return;
+          element.textContent = message;
+          element.className = 'verification-message ' + type;
+        }
+
+        function formatMoney(value) {
+          const numeric = Number(value);
+          if (Number.isNaN(numeric)) return '—';
+          return new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+            maximumFractionDigits: 2
+          }).format(numeric);
+        }
+
+        function getStatusBadge(status) {
+          const normalized = String(status || '').toUpperCase();
+          if (normalized === 'APPROVED') return 'tag-badge success';
+          if (normalized === 'REJECTED') return 'tag-badge danger';
+          if (normalized === 'PENDING') return 'tag-badge warning';
+          return 'tag-badge';
+        }
+
+        async function loadApplications() {
+          try {
+            const apps = await apiRequest('/applications');
+            const list = Array.isArray(apps) ? apps : [];
+            const eligibleApps = list.filter((app) => String(app.eligibilityStatus || '').toUpperCase() === 'ELIGIBLE');
+
+            if (!eligibleApps.length) {
+              applicationList.innerHTML = '<div class="empty-state">No eligible scholarship applications available for verification yet.</div>';
+              applicationSelect.innerHTML = '<option value="">Select an application</option>';
+              return;
+            }
+
+            applicationSelect.innerHTML = '<option value="">Select an application</option>' + eligibleApps.map((app) => `
+              <option value="${app.id}">${app.id} - ${escapeHtml(app.student?.name || 'Student')}</option>
+            `).join('');
+
+            applicationList.innerHTML = eligibleApps.map((app) => {
+              const student = app.student || {};
+              const scheme = app.scheme || {};
+              const statusLabel = app.applicationStatus || app.eligibilityStatus || 'PENDING';
+
+              return `
+                <article class="app-item">
+                  <span class="${getStatusBadge(statusLabel)}">${escapeHtml(statusLabel)}</span>
+                  <h3>Application #${app.id}</h3>
+                  <ul class="meta-list">
+                    <li><strong>Student:</strong> ${escapeHtml(student.name || 'N/A')}</li>
+                    <li><strong>Student ID:</strong> ${escapeHtml(student.id || 'N/A')}</li>
+                    <li><strong>Scheme:</strong> ${escapeHtml(scheme.schemeName || 'N/A')}</li>
+                    <li><strong>Marks:</strong> ${Number(student.marks ?? 0)}%</li>
+                    <li><strong>Income:</strong> ${formatMoney(student.annualIncome)}</li>
+                    <li><strong>Eligibility:</strong> ${escapeHtml(app.eligibilityStatus || 'N/A')}</li>
+                    <li><strong>Date:</strong> ${escapeHtml(app.applicationDate || 'N/A')}</li>
+                  </ul>
+                  <div class="inline-actions">
+                    <button type="button" class="primary" data-application-id="${app.id}">Select</button>
+                  </div>
+                </article>
+              `;
+            }).join('');
+
+            applicationList.querySelectorAll('[data-application-id]').forEach((button) => {
+              button.addEventListener('click', () => {
+                const value = button.getAttribute('data-application-id');
+                if (value) {
+                  applicationSelect.value = String(value);
+                  applicationSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              });
+            });
+          } catch (error) {
+            applicationList.innerHTML = '<div class="empty-state">Unable to load applications. Please refresh the page.</div>';
+          }
+        }
+
+        async function loadSchemes() {
+          try {
+            const schemes = await apiRequest('/schemes');
+            const list = Array.isArray(schemes) ? schemes : [];
+
+            if (!list.length) {
+              schemeList.innerHTML = '<div class="empty-state">No scholarship schemes available.</div>';
+              return;
+            }
+
+            schemeList.innerHTML = list.map((scheme) => `
+              <article class="scheme-item">
+                <h3>${escapeHtml(scheme.schemeName || 'Scholarship')}</h3>
+                <ul class="meta-list">
+                  <li><strong>Income Limit:</strong> ${formatMoney(scheme.incomeLimit)}</li>
+                  <li><strong>Minimum Marks:</strong> ${Number(scheme.minimumMarks ?? 0)}%</li>
+                  <li><strong>Amount:</strong> ${formatMoney(scheme.scholarshipAmount)}</li>
+                  <li><strong>Description:</strong> ${escapeHtml(scheme.description || 'No description provided.')}</li>
+                </ul>
+              </article>
+            `).join('');
+          } catch (error) {
+            schemeList.innerHTML = '<div class="empty-state">Unable to load scholarship schemes right now.</div>';
+          }
+        }
+
+        verificationForm.addEventListener('submit', async function (event) {
+          event.preventDefault();
+
+          const applicationId = applicationSelect.value;
+          const verifierName = document.getElementById('verifierName').value.trim();
+          const remarks = document.getElementById('remarks').value.trim();
+
+          if (!applicationId || !verifierName) {
+            showMessage(createMessage, 'Please select an application and enter the verifier name.', 'error');
+            return;
+          }
+
+          const selectedApplication = (await apiRequest('/applications')).find((item) => String(item.id) === String(applicationId));
+          if (!selectedApplication) {
+            showMessage(createMessage, 'Selected application was not found.', 'error');
+            return;
+          }
+
+          if (String(selectedApplication.eligibilityStatus || '').toUpperCase() !== 'ELIGIBLE') {
+            showMessage(createMessage, 'This application is not eligible for verification yet. Only eligible applications can be verified.', 'error');
+            return;
+          }
+
+          if (String(selectedApplication.applicationStatus || '').toUpperCase() === 'REJECTED') {
+            showMessage(createMessage, 'This application is already rejected and cannot be verified.', 'error');
+            return;
+          }
+
+          const verificationData = {
+            verifierName,
+            status: 'PENDING',
+            remarks
+          };
+
+          try {
+            const response = await fetch(`/verifications?applicationId=${applicationId}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(verificationData)
+            });
+
+            let data = {};
+            try {
+              data = await response.json();
+            } catch (error) {
+              data = {};
+            }
+
+            if (!response.ok) {
+              const errorMessage = data.message || data.error || 'Verification could not be created.';
+              throw new Error(errorMessage);
+            }
+
+            currentVerificationId = data.id;
+            document.getElementById('verificationId').textContent = data.id;
+            document.getElementById('resultApplicationId').textContent = applicationId;
+            document.getElementById('resultVerifier').textContent = data.verifierName || verifierName;
+            document.getElementById('resultRemarks').textContent = data.remarks || 'No remarks';
+            document.getElementById('verificationStatus').textContent = data.status || 'PENDING';
+            document.getElementById('verificationStatus').className = 'status-badge pending';
+
+            verificationResult.style.display = 'block';
+            showMessage(createMessage, 'Verification created successfully.', 'success');
+            verificationResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } catch (error) {
+            showMessage(createMessage, error.message || 'Verification could not be created.', 'error');
+          }
+        });
+
+        document.getElementById('approveBtn').addEventListener('click', async function () {
+          if (!currentVerificationId) {
+            showMessage(decisionMessage, 'Create a verification first.', 'error');
+            return;
+          }
+
+          try {
+            const response = await fetch(`/verifications/${currentVerificationId}/approve`, {
+              method: 'PUT'
+            });
+
+            let data = {};
+            try {
+              data = await response.json();
+            } catch (error) {
+              data = {};
+            }
+
+            if (!response.ok) {
+              throw new Error(data.message || 'Approval failed.');
+            }
+
+            const statusElement = document.getElementById('verificationStatus');
+            statusElement.textContent = 'APPROVED';
+            statusElement.className = 'status-badge approved';
+            showMessage(decisionMessage, '✓ Verification approved successfully.', 'success');
+          } catch (error) {
+            showMessage(decisionMessage, error.message || 'Approval failed.', 'error');
+          }
+        });
+
+        document.getElementById('rejectBtn').addEventListener('click', async function () {
+          if (!currentVerificationId) {
+            showMessage(decisionMessage, 'Create a verification first.', 'error');
+            return;
+          }
+
+          try {
+            const response = await fetch(`/verifications/${currentVerificationId}/reject`, {
+              method: 'PUT'
+            });
+
+            let data = {};
+            try {
+              data = await response.json();
+            } catch (error) {
+              data = {};
+            }
+
+            if (!response.ok) {
+              throw new Error(data.message || 'Rejection failed.');
+            }
+
+            const statusElement = document.getElementById('verificationStatus');
+            statusElement.textContent = 'REJECTED';
+            statusElement.className = 'status-badge rejected';
+            showMessage(decisionMessage, '✕ Verification rejected.', 'success');
+          } catch (error) {
+            showMessage(decisionMessage, error.message || 'Rejection failed.', 'error');
+          }
+        });
+
+        scholarshipForm.addEventListener('submit', async function (event) {
+          event.preventDefault();
+
+          const payload = {
+            schemeName: document.getElementById('schemeName').value.trim(),
+            description: document.getElementById('description').value.trim(),
+            incomeLimit: Number(document.getElementById('incomeLimit').value),
+            minimumMarks: Number(document.getElementById('minimumMarks').value),
+            scholarshipAmount: Number(document.getElementById('scholarshipAmount').value)
+          };
+
+          if (!payload.schemeName || !payload.description || Number.isNaN(payload.incomeLimit) || Number.isNaN(payload.minimumMarks) || Number.isNaN(payload.scholarshipAmount)) {
+            showMessage(schemeMessage, 'Please fill all scholarship fields correctly.', 'error');
+            return;
+          }
+
+          try {
+            const response = await fetch('/schemes', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+
+            let result = {};
+            try {
+              result = await response.json();
+            } catch (error) {
+              result = {};
+            }
+
+            if (!response.ok) {
+              throw new Error(result.message || 'Scholarship could not be added.');
+            }
+
+            scholarshipForm.reset();
+            showMessage(schemeMessage, 'Scholarship added successfully.', 'success');
+            await loadSchemes();
+            await loadApplications();
+          } catch (error) {
+            showMessage(schemeMessage, error.message || 'Scholarship could not be added.', 'error');
+          }
+        });
+
+        await loadApplications();
+        await loadSchemes();
+      });
+    </script>
+  </body>
+</html>

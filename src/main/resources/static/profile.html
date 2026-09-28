@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile | ScholarTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav-wrap">
+        <a href="index.html" class="brand">🎓 ScholarTrack</a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="index.html">Home</a>
+          <a href="schemes.html">Scholarships</a>
+          <a href="student-dashboard.html">Dashboard</a>
+          <a href="status.html">My Status</a>
+          <button class="nav-logout" id="logoutButton" type="button">Logout</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="container">
+        <section class="page-header">
+          <span class="eyebrow dark">Profile</span>
+          <h1>Student Profile</h1>
+        </section>
+
+        <div class="profile-panel">
+          <div class="profile-avatar">👤</div>
+          <div class="profile-body">
+            <div class="info-grid two-col">
+              <div>
+                <label>Name</label>
+                <p id="studentName">--</p>
+              </div>
+              <div>
+                <label>Student ID</label>
+                <p id="studentId">--</p>
+              </div>
+              <div>
+                <label>Email</label>
+                <p id="studentEmail">--</p>
+              </div>
+              <div>
+                <label>Phone</label>
+                <p id="studentPhone">--</p>
+              </div>
+              <div>
+                <label>Marks</label>
+                <p id="studentMarks">--</p>
+              </div>
+              <div>
+                <label>Annual Income</label>
+                <p id="studentAnnualIncome">--</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+        requireAuth();
+        const studentId = localStorage.getItem('studentId');
+
+        const student = await fetchStudentById(studentId);
+        document.getElementById('studentName').textContent = student.name || '--';
+        document.getElementById('studentId').textContent = student.id || '--';
+        document.getElementById('studentEmail').textContent = student.email || '--';
+        document.getElementById('studentPhone').textContent = student.phone || '--';
+        document.getElementById('studentMarks').textContent = student.marks ?? '--';
+        document.getElementById('studentAnnualIncome').textContent = student.annualIncome ?? '--';
+      });
+    </script>
+  </body>
+</html>
