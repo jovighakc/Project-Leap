@@ -20,6 +20,10 @@ public class Application {
 
     private String applicationDate;
 
+    private Double marks;
+
+    private Double annualIncome;
+
     private String document;
 
     private String eligibilityStatus;
@@ -61,6 +65,22 @@ public class Application {
 
     public void setApplicationDate(String applicationDate) {
         this.applicationDate = applicationDate;
+    }
+
+    public Double getMarks() {
+        return marks;
+    }
+
+    public void setMarks(Double marks) {
+        this.marks = marks;
+    }
+
+    public Double getAnnualIncome() {
+        return annualIncome;
+    }
+
+    public void setAnnualIncome(Double annualIncome) {
+        this.annualIncome = annualIncome;
     }
 
     public String getDocument() {

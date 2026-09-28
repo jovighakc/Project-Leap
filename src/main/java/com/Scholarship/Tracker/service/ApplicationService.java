@@ -15,8 +15,11 @@ import java.util.List;
 public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
+
     private final StudentRepository studentRepository;
+
     private final SchemeRepository schemeRepository;
+
 
     public ApplicationService(
             ApplicationRepository applicationRepository,
@@ -24,16 +27,31 @@ public class ApplicationService {
             SchemeRepository schemeRepository) {
 
         this.applicationRepository = applicationRepository;
+
         this.studentRepository = studentRepository;
+
         this.schemeRepository = schemeRepository;
     }
 
 
+    // =========================================
     // CREATE APPLICATION
+    // =========================================
+
     public Application createApplication(
+
             Long studentId,
+
             Long schemeId,
+
+            Double marks,
+
+            Double annualIncome,
+
             String document) {
+
+
+        // FIND STUDENT
 
         Student student =
                 studentRepository.findById(studentId)
@@ -43,6 +61,9 @@ public class ApplicationService {
                                                 + studentId
                                 )
                         );
+
+
+        // FIND SCHOLARSHIP SCHEME
 
         Scheme scheme =
                 schemeRepository.findById(schemeId)
@@ -54,41 +75,83 @@ public class ApplicationService {
                         );
 
 
-        // AUTOMATIC ELIGIBILITY CHECK
+        // VALIDATE MARKS
+
+        if (marks == null ||
+                marks < 0 ||
+                marks > 100) {
+
+            throw new RuntimeException(
+                    "Marks must be between 0 and 100."
+            );
+        }
+
+
+        // VALIDATE ANNUAL INCOME
+
+        if (annualIncome == null ||
+                annualIncome < 0) {
+
+            throw new RuntimeException(
+                    "Annual income cannot be negative."
+            );
+        }
+
+
+        // =========================================
+        // ELIGIBILITY CHECK
+        // =========================================
 
         boolean incomeEligible =
-                student.getAnnualIncome()
-                        <= scheme.getIncomeLimit();
+                annualIncome <=
+                        scheme.getIncomeLimit();
+
 
         boolean marksEligible =
-                student.getMarks()
-                        >= scheme.getMinimumMarks();
+                marks >=
+                        scheme.getMinimumMarks();
+
 
         boolean eligible =
-                incomeEligible && marksEligible;
+                incomeEligible &&
+                        marksEligible;
 
 
+        // =========================================
         // CREATE APPLICATION
+        // =========================================
 
         Application application =
                 new Application();
+
 
         application.setStudent(student);
 
         application.setScheme(scheme);
 
+
+        // SAVE APPLY-TIME DETAILS
+
+        application.setMarks(marks);
+
+        application.setAnnualIncome(annualIncome);
+
+
+        // SAVE DOCUMENT INFORMATION
+
         application.setDocument(document);
 
 
-        // IMPORTANT:
-        // applicationDate is String in your entity
+        // APPLICATION DATE
 
         application.setApplicationDate(
                 LocalDate.now().toString()
         );
 
 
+        // =========================================
         // ELIGIBILITY STATUS
+        // =========================================
 
         if (eligible) {
 
@@ -112,12 +175,16 @@ public class ApplicationService {
         }
 
 
-        // INITIAL DISBURSEMENT STATUS
+        // =========================================
+        // DISBURSEMENT STATUS
+        // =========================================
 
         application.setDisbursementStatus(
                 "NOT_STARTED"
         );
 
+
+        // SAVE
 
         return applicationRepository.save(
                 application
@@ -125,7 +192,9 @@ public class ApplicationService {
     }
 
 
+    // =========================================
     // GET ALL APPLICATIONS
+    // =========================================
 
     public List<Application> getAllApplications() {
 
@@ -133,12 +202,15 @@ public class ApplicationService {
     }
 
 
+    // =========================================
     // GET APPLICATION BY ID
+    // =========================================
 
     public Application getApplicationById(
             Long id) {
 
-        return applicationRepository.findById(id)
+        return applicationRepository
+                .findById(id)
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Application not found with ID: "
@@ -148,13 +220,16 @@ public class ApplicationService {
     }
 
 
+    // =========================================
     // COMPLETE DISBURSEMENT
+    // =========================================
 
     public Application completeDisbursement(
             Long id) {
 
         Application application =
-                applicationRepository.findById(id)
+                applicationRepository
+                        .findById(id)
                         .orElseThrow(() ->
                                 new RuntimeException(
                                         "Application not found with ID: "
@@ -162,8 +237,6 @@ public class ApplicationService {
                                 )
                         );
 
-
-        // DISBURSEMENT ONLY AFTER APPROVAL
 
         if (!"APPROVED".equals(
                 application.getApplicationStatus())) {
@@ -186,10 +259,13 @@ public class ApplicationService {
     }
 
 
-    // GET APPLICATIONS BY STUDENT
+    // =========================================
+    // GET STUDENT APPLICATIONS
+    // =========================================
 
     public List<Application> getApplicationsByStudent(
             Long studentId) {
+
 
         studentRepository.findById(studentId)
                 .orElseThrow(() ->
@@ -204,4 +280,3 @@ public class ApplicationService {
                 .findByStudentId(studentId);
     }
 }
-

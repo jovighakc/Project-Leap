@@ -8,15 +8,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/applications")
+@CrossOrigin
 public class ApplicationController {
 
     private final ApplicationService applicationService;
 
+
     public ApplicationController(
             ApplicationService applicationService) {
 
-        this.applicationService =
-                applicationService;
+        this.applicationService = applicationService;
     }
 
 
@@ -26,13 +27,22 @@ public class ApplicationController {
 
     @PostMapping
     public Application createApplication(
+
             @RequestParam Long studentId,
+
             @RequestParam Long schemeId,
+
+            @RequestParam Double marks,
+
+            @RequestParam Double annualIncome,
+
             @RequestParam String document) {
 
         return applicationService.createApplication(
                 studentId,
                 schemeId,
+                marks,
+                annualIncome,
                 document
         );
     }
@@ -45,8 +55,7 @@ public class ApplicationController {
     @GetMapping
     public List<Application> getAllApplications() {
 
-        return applicationService
-                .getAllApplications();
+        return applicationService.getAllApplications();
     }
 
 
@@ -58,8 +67,7 @@ public class ApplicationController {
     public Application getApplicationById(
             @PathVariable Long id) {
 
-        return applicationService
-                .getApplicationById(id);
+        return applicationService.getApplicationById(id);
     }
 
 
@@ -71,8 +79,7 @@ public class ApplicationController {
     public Application completeDisbursement(
             @PathVariable Long id) {
 
-        return applicationService
-                .completeDisbursement(id);
+        return applicationService.completeDisbursement(id);
     }
 
 

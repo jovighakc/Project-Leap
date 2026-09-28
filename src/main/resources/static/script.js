@@ -110,7 +110,18 @@ async function fetchVerificationForApplication(applicationId) {
 function attachLogout() {
   const button = document.getElementById('logoutButton');
   if (!button) return;
+
   button.addEventListener('click', () => {
+    const verificationCard = document.getElementById('verificationResult');
+    const hasActiveVerification = verificationCard && verificationCard.style.display !== 'none';
+
+    if (hasActiveVerification) {
+      const shouldContinue = window.confirm('A verification or disbursement action is in progress. Logging out now may interrupt the process. Continue?');
+      if (!shouldContinue) {
+        return;
+      }
+    }
+
     localStorage.removeItem('studentId');
     localStorage.removeItem('studentName');
     localStorage.removeItem('studentEmail');

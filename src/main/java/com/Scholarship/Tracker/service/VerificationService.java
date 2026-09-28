@@ -4,6 +4,7 @@ import com.Scholarship.Tracker.entity.Application;
 import com.Scholarship.Tracker.entity.Verification;
 import com.Scholarship.Tracker.repository.ApplicationRepository;
 import com.Scholarship.Tracker.repository.VerificationRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -68,6 +69,23 @@ public class VerificationService {
             );
         }
 
+        if ("APPROVED".equals(
+                application.getApplicationStatus())) {
+
+            throw new RuntimeException(
+                    "Verification cannot be created. " +
+                            "Application is already approved."
+            );
+        }
+
+        Verification existingVerification = verificationRepository
+                .findByApplicationId(applicationId)
+                .orElse(null);
+
+        if (existingVerification != null) {
+            return existingVerification;
+        }
+
 
         // =========================================
         // CONNECT APPLICATION
@@ -91,9 +109,23 @@ public class VerificationService {
         // SAVE
         // =========================================
 
-        return verificationRepository.save(
-                verification
-        );
+        try {
+            return verificationRepository.save(
+                    verification
+            );
+        } catch (DataIntegrityViolationException ex) {
+            Verification duplicate = verificationRepository
+                    .findByApplicationId(applicationId)
+                    .orElse(null);
+
+            if (duplicate != null) {
+                return duplicate;
+            }
+
+            throw new RuntimeException(
+                    "Verification already exists for this application."
+            );
+        }
     }
 
 

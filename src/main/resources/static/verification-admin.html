@@ -95,6 +95,18 @@
           </div>
         </div>
 
+        <div class="verification-details" style="margin-top: 1rem;">
+          <div class="detail-box">
+            <span>Approval Status</span>
+            <strong id="approvalStatusValue">PENDING</strong>
+          </div>
+
+          <div class="detail-box">
+            <span>Disbursement Status</span>
+            <strong id="disbursementStatusValue">NOT_STARTED</strong>
+          </div>
+        </div>
+
         <div class="decision-section">
           <h3>Verification Decision</h3>
           <p>After checking the submitted documents, choose the appropriate action.</p>
@@ -162,11 +174,54 @@
         const verificationResult = document.getElementById('verificationResult');
         const decisionMessage = document.getElementById('decisionMessage');
         let currentVerificationId = null;
+        let currentApplicationId = null;
+
+        function setStatusText(elementId, value) {
+          const element = document.getElementById(elementId);
+          if (!element) return;
+
+          const normalized = String(value || '').toUpperCase();
+          const hasTick = normalized === 'APPROVED' || normalized === 'COMPLETED';
+          const hasCross = normalized === 'REJECTED';
+
+          element.textContent = `${hasTick ? '✓' : hasCross ? '✕' : '•'} ${normalized || 'PENDING'}`;
+          element.className = 'status-inline ' + (hasTick ? 'approved' : hasCross ? 'rejected' : 'pending');
+        }
 
         function showMessage(element, message, type) {
           if (!element) return;
           element.textContent = message;
           element.className = 'verification-message ' + type;
+        }
+
+        async function refreshApplicationStatus() {
+          const applicationId = Number(currentApplicationId || applicationSelect.value || 0);
+          if (!applicationId) return null;
+
+          try {
+            const app = await apiRequest(`/applications/${applicationId}`);
+            if (app && app.applicationStatus) {
+              setStatusText('approvalStatusValue', app.applicationStatus);
+            }
+            if (app && app.disbursementStatus) {
+              setStatusText('disbursementStatusValue', app.disbursementStatus);
+            }
+            return app;
+          } catch (error) {
+            return null;
+          }
+        }
+
+        function ensureCurrentApplicationId() {
+          const selectedValue = applicationSelect.value;
+          const resultValue = document.getElementById('resultApplicationId')?.textContent?.trim();
+          const candidate = selectedValue || resultValue;
+
+          if (candidate) {
+            currentApplicationId = Number(candidate);
+          }
+
+          return currentApplicationId;
         }
 
         function formatMoney(value) {
@@ -200,8 +255,8 @@
               ...student,
               name: student.name ?? app.studentName ?? 'Student',
               id: student.id ?? app.studentId ?? 'N/A',
-              marks: student.marks ?? app.studentMarks ?? 0,
-              annualIncome: student.annualIncome ?? app.studentAnnualIncome ?? 0
+              marks: student.marks ?? app.marks ?? app.studentMarks ?? 0,
+              annualIncome: student.annualIncome ?? app.annualIncome ?? app.studentAnnualIncome ?? 0
             },
             scheme: {
               ...scheme,
@@ -212,6 +267,10 @@
             applicationDate: app.applicationDate ?? app.createdAt ?? 'N/A'
           };
         }
+
+        applicationSelect.addEventListener('change', () => {
+          ensureCurrentApplicationId();
+        });
 
         async function loadApplications() {
           try {
@@ -246,8 +305,8 @@
                     <li><strong>Student:</strong> ${escapeHtml(student.name || 'N/A')}</li>
                     <li><strong>Student ID:</strong> ${escapeHtml(student.id || 'N/A')}</li>
                     <li><strong>Scheme:</strong> ${escapeHtml(scheme.schemeName || 'N/A')}</li>
-                    <li><strong>Marks:</strong> ${Number(student.marks ?? 0)}%</li>
-                    <li><strong>Income:</strong> ${formatMoney(student.annualIncome)}</li>
+                    <li><strong>Marks:</strong> ${Number(app.marks ?? student.marks ?? 0)}%</li>
+                    <li><strong>Income:</strong> ${formatMoney(app.annualIncome ?? student.annualIncome ?? 0)}</li>
                     <li><strong>Eligibility:</strong> ${escapeHtml(app.eligibilityStatus || 'N/A')}</li>
                     <li><strong>Date:</strong> ${escapeHtml(app.applicationDate || 'N/A')}</li>
                   </ul>
@@ -325,6 +384,28 @@
             return;
           }
 
+          const allVerifications = await apiRequest('/verifications');
+          const existingVerification = Array.isArray(allVerifications)
+            ? allVerifications.find((item) => String(item.application?.id ?? item.applicationId) === String(applicationId))
+            : null;
+
+          if (existingVerification) {
+            currentVerificationId = existingVerification.id;
+            currentApplicationId = Number(applicationId);
+            document.getElementById('resultApplicationId').textContent = applicationId;
+            document.getElementById('verificationId').textContent = existingVerification.id;
+            document.getElementById('resultVerifier').textContent = existingVerification.verifierName || 'N/A';
+            document.getElementById('resultRemarks').textContent = existingVerification.remarks || 'No remarks';
+            document.getElementById('verificationStatus').textContent = existingVerification.status || 'PENDING';
+            document.getElementById('verificationStatus').className = 'status-badge ' + (String(existingVerification.status || '').toUpperCase() === 'APPROVED' ? 'approved' : String(existingVerification.status || '').toUpperCase() === 'REJECTED' ? 'rejected' : 'pending');
+            setStatusText('approvalStatusValue', selectedApplication.applicationStatus || 'PENDING');
+            setStatusText('disbursementStatusValue', selectedApplication.disbursementStatus || 'NOT_STARTED');
+            verificationResult.style.display = 'block';
+            showMessage(createMessage, 'Verification already exists for this application. Showing the existing record.', 'info');
+            verificationResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            return;
+          }
+
           if (String(selectedApplication.applicationStatus || '').toUpperCase() === 'REJECTED') {
             showMessage(createMessage, 'This application is already rejected and cannot be verified.', 'error');
             return;
@@ -356,12 +437,15 @@
             }
 
             currentVerificationId = data.id;
-            document.getElementById('verificationId').textContent = data.id;
+            currentApplicationId = Number(applicationId);
             document.getElementById('resultApplicationId').textContent = applicationId;
+            document.getElementById('verificationId').textContent = data.id;
             document.getElementById('resultVerifier').textContent = data.verifierName || verifierName;
             document.getElementById('resultRemarks').textContent = data.remarks || 'No remarks';
             document.getElementById('verificationStatus').textContent = data.status || 'PENDING';
             document.getElementById('verificationStatus').className = 'status-badge pending';
+            setStatusText('approvalStatusValue', 'PENDING');
+            setStatusText('disbursementStatusValue', 'NOT_STARTED');
 
             verificationResult.style.display = 'block';
             showMessage(createMessage, 'Verification created successfully.', 'success');
@@ -372,6 +456,8 @@
         });
 
         document.getElementById('approveBtn').addEventListener('click', async function () {
+          ensureCurrentApplicationId();
+
           if (!currentVerificationId) {
             showMessage(decisionMessage, 'Create a verification first.', 'error');
             return;
@@ -396,6 +482,19 @@
             const statusElement = document.getElementById('verificationStatus');
             statusElement.textContent = 'APPROVED';
             statusElement.className = 'status-badge approved';
+            currentApplicationId = Number(applicationSelect.value || currentApplicationId || document.getElementById('resultApplicationId').textContent || 0);
+
+            document.getElementById('approvalStatusValue').textContent = '✓ APPROVED';
+            document.getElementById('approvalStatusValue').className = 'status-inline approved';
+            document.getElementById('disbursementStatusValue').textContent = '• NOT_STARTED';
+            document.getElementById('disbursementStatusValue').className = 'status-inline pending';
+
+            const refreshedApp = await refreshApplicationStatus();
+            if (refreshedApp) {
+              setStatusText('approvalStatusValue', refreshedApp.applicationStatus || 'APPROVED');
+              setStatusText('disbursementStatusValue', refreshedApp.disbursementStatus || 'NOT_STARTED');
+            }
+
             showMessage(decisionMessage, '✓ Verification approved successfully.', 'success');
           } catch (error) {
             showMessage(decisionMessage, error.message || 'Approval failed.', 'error');
@@ -427,6 +526,8 @@
             const statusElement = document.getElementById('verificationStatus');
             statusElement.textContent = 'REJECTED';
             statusElement.className = 'status-badge rejected';
+            setStatusText('approvalStatusValue', 'REJECTED');
+            setStatusText('disbursementStatusValue', 'NOT_STARTED');
             showMessage(decisionMessage, '✕ Verification rejected.', 'success');
           } catch (error) {
             showMessage(decisionMessage, error.message || 'Rejection failed.', 'error');

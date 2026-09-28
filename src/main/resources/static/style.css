@@ -1196,6 +1196,32 @@ select:focus {
     color: #991b1b;
 }
 
+.status-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.status-inline.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-inline.approved {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-inline.rejected {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
 
 .verification-details {
     display: grid;

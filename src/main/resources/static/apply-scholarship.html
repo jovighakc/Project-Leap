@@ -179,9 +179,11 @@
           if (!scholarshipSelect) return;
 
           scholarshipError.classList.add('hidden');
+          scholarshipSelect.disabled = true;
           scholarshipSelect.innerHTML = '<option value="">Loading scholarships...</option>';
 
-          const endpoints = ['/schemes', '/scholarships'];
+          const endpoints = ['/schemes'];
+          let lastError = null;
 
           for (const endpoint of endpoints) {
             try {
@@ -189,12 +191,14 @@
               const list = Array.isArray(schemes) ? schemes : [];
 
               if (list.length === 0) {
+                scholarshipSelect.disabled = true;
                 scholarshipSelect.innerHTML = '<option value="">No scholarships available</option>';
                 scholarshipError.textContent = 'No scholarship schemes are available yet. Please ask the admin to add a scholarship first.';
                 scholarshipError.classList.remove('hidden');
                 return;
               }
 
+              scholarshipSelect.disabled = false;
               scholarshipSelect.innerHTML = '<option value="">Select a scholarship</option>' + list.map((scheme) => `
                 <option value="${scheme.id}">${escapeHtml(scheme.schemeName || 'Scholarship')}</option>
               `).join('');
@@ -210,12 +214,15 @@
 
               return;
             } catch (error) {
-              scholarshipError.textContent = 'Unable to load scholarship schemes. Please try again later.';
+              lastError = error;
             }
           }
 
+          scholarshipSelect.disabled = true;
           scholarshipSelect.innerHTML = '<option value="">No scholarships available</option>';
-          scholarshipError.textContent = 'No scholarship schemes are available yet. Please ask the admin to add a scholarship first.';
+          scholarshipError.textContent = lastError
+            ? 'Unable to load scholarship schemes. Please try again later.'
+            : 'No scholarship schemes are available yet. Please ask the admin to add a scholarship first.';
           scholarshipError.classList.remove('hidden');
         }
 
@@ -285,11 +292,17 @@
               const params = new URLSearchParams({
                 studentId: String(studentId),
                 schemeId: String(scholarshipId),
+                marks: String(marks),
+                annualIncome: String(annualIncome),
                 document: 'application-submitted'
               });
 
-              const response = await fetch(`/applications?${params.toString()}`, {
-                method: 'POST'
+              const response = await fetch('/applications', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: params.toString()
               });
 
               let result = null;
@@ -322,7 +335,8 @@
             } catch (error) {
               submitButton.disabled = false;
               submitButton.textContent = 'Submit Scholarship Application';
-              setInlineMessage('Unable to submit the scholarship application. Please try again.', 'error');
+              const message = error && error.message ? error.message : 'Unable to submit the scholarship application. Please try again.';
+              setInlineMessage(message, 'error');
             }
           });
         }
