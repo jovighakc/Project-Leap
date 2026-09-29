@@ -22,7 +22,7 @@ public class AdminController {
         return adminService.createAdmin(admin);
     }
 
-    @GetMapping
+        @GetMapping
     public List<Admin> getAllAdmins() {
         return adminService.getAllAdmins();
     }
