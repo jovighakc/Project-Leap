@@ -1277,14 +1277,15 @@ select:focus {
 .decision-buttons {
     display: grid;
 
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 
     gap: 15px;
 }
 
 
 .approve-btn,
-.reject-btn {
+.reject-btn,
+.disburse-btn {
     padding: 14px;
 
     border: none;
@@ -1298,6 +1299,8 @@ select:focus {
     font-weight: bold;
 
     cursor: pointer;
+
+    transition: background 0.2s ease;
 }
 
 .approve-btn {
@@ -1315,6 +1318,20 @@ select:focus {
 .reject-btn:hover {
     background: #b91c1c;
 }
+
+.disburse-btn {
+    background: #2563eb;
+}
+
+.disburse-btn:hover {
+    background: #1d4ed8;
+}
+
+.disburse-btn:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+
 
 
 /* MESSAGE */

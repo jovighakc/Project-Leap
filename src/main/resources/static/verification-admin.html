@@ -108,12 +108,13 @@
         </div>
 
         <div class="decision-section">
-          <h3>Verification Decision</h3>
-          <p>After checking the submitted documents, choose the appropriate action.</p>
+          <h3>Verification Decision & Disbursement</h3>
+          <p>After checking the submitted documents, choose the appropriate verification action or disburse funds.</p>
 
           <div class="decision-buttons">
             <button type="button" id="approveBtn" class="approve-btn">✓ Approve Verification</button>
             <button type="button" id="rejectBtn" class="reject-btn">✕ Reject Verification</button>
+            <button type="button" id="disburseBtn" class="disburse-btn">💳 Complete Disbursement</button>
           </div>
         </div>
 
@@ -533,6 +534,40 @@
             showMessage(decisionMessage, error.message || 'Rejection failed.', 'error');
           }
         });
+
+        const disburseBtn = document.getElementById('disburseBtn');
+        if (disburseBtn) {
+          disburseBtn.addEventListener('click', async function () {
+            ensureCurrentApplicationId();
+
+            if (!currentApplicationId) {
+              showMessage(decisionMessage, 'Please select or verify an application first.', 'error');
+              return;
+            }
+
+            try {
+              const response = await fetch(`/applications/${currentApplicationId}/disburse`, {
+                method: 'PUT'
+              });
+
+              let data = {};
+              try {
+                data = await response.json();
+              } catch (error) {
+                data = {};
+              }
+
+              if (!response.ok) {
+                throw new Error(data.message || data.error || 'Disbursement failed. Make sure application is approved first.');
+              }
+
+              setStatusText('disbursementStatusValue', 'COMPLETED');
+              showMessage(decisionMessage, '💳 Disbursement completed successfully.', 'success');
+            } catch (error) {
+              showMessage(decisionMessage, error.message || 'Disbursement failed.', 'error');
+            }
+          });
+        }
 
         if (scholarshipForm) {
           scholarshipForm.addEventListener('submit', async function (event) {

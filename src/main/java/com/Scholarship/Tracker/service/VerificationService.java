@@ -23,13 +23,28 @@ public class VerificationService {
 
 
     // =========================================
+    // GET ALL VERIFICATIONS
+    // =========================================
+
+    public java.util.List<Verification> getAllVerifications() {
+        return verificationRepository.findAll();
+    }
+
+    // =========================================
+    // GET VERIFICATION BY APPLICATION ID
+    // =========================================
+
+    public Verification getVerificationByApplicationId(Long applicationId) {
+        return verificationRepository.findByApplicationId(applicationId).orElse(null);
+    }
+
+    // =========================================
     // CREATE VERIFICATION
     // =========================================
 
     public Verification createVerification(
             Long applicationId,
             Verification verification) {
-
 
         Application application =
                 applicationRepository
@@ -40,6 +55,14 @@ public class VerificationService {
                                                 + applicationId
                                 )
                         );
+
+        Verification existingVerification = verificationRepository
+                .findByApplicationId(applicationId)
+                .orElse(null);
+
+        if (existingVerification != null) {
+            return existingVerification;
+        }
 
 
         // =========================================
@@ -76,14 +99,6 @@ public class VerificationService {
                     "Verification cannot be created. " +
                             "Application is already approved."
             );
-        }
-
-        Verification existingVerification = verificationRepository
-                .findByApplicationId(applicationId)
-                .orElse(null);
-
-        if (existingVerification != null) {
-            return existingVerification;
         }
 
 

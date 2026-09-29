@@ -16,6 +16,18 @@ public class VerificationController {
         this.verificationService = verificationService;
     }
 
+    @GetMapping
+    public java.util.List<Verification> getAllVerifications() {
+        return verificationService.getAllVerifications();
+    }
+
+    @GetMapping("/application/{applicationId}")
+    public Verification getVerificationByApplicationId(
+            @PathVariable Long applicationId) {
+
+        return verificationService.getVerificationByApplicationId(applicationId);
+    }
+
     @PostMapping
     public Verification createVerification(
             @RequestParam Long applicationId,

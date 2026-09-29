@@ -57,61 +57,98 @@
             return;
           }
 
-          const app = applicationList[0];
-          const verification = await fetchVerificationForApplication(app.id);
-          const verificationStatus = String(verification?.status || '').toUpperCase();
-          const applicationStatus = String(app.applicationStatus || 'PENDING').toUpperCase();
-          const approvalStatus = applicationStatus === 'APPROVED' ? 'APPROVED' : applicationStatus === 'REJECTED' ? 'REJECTED' : 'PENDING';
-          const disbursementStatus = String(app.disbursementStatus || 'NOT_STARTED').toUpperCase();
-          const submittedStatus = 'SUBMITTED';
-          const isDocumentVerified = verificationStatus === 'APPROVED' || verificationStatus === 'REJECTED' || applicationStatus === 'APPROVED' || applicationStatus === 'REJECTED';
-          const documentVerificationLabel = verificationStatus || (applicationStatus === 'APPROVED' ? 'APPROVED' : applicationStatus === 'REJECTED' ? 'REJECTED' : 'PENDING');
+          // Sort applications descending by ID (newest first)
+          const sortedApps = [...applicationList].sort((a, b) => Number(b.id) - Number(a.id));
 
-          content.innerHTML = `
-            <div class="status-summary">
-              <div class="summary-card">
-                <span class="pill">Application ID</span>
-                <h3>#${app.id}</h3>
-                <p><strong>Scholarship:</strong> ${escapeHtml(app.scheme ? app.scheme.schemeName : 'N/A')}</p>
-                <p><strong>Application Date:</strong> ${escapeHtml(app.applicationDate || 'N/A')}</p>
+          // Pre-select stored application or newest application
+          const savedAppId = localStorage.getItem('applicationId');
+          let selectedAppId = savedAppId ? Number(savedAppId) : sortedApps[0].id;
+          if (!sortedApps.some(a => Number(a.id) === selectedAppId)) {
+            selectedAppId = sortedApps[0].id;
+          }
+
+          async function renderApplicationStatus(appId) {
+            const app = sortedApps.find(a => Number(a.id) === Number(appId)) || sortedApps[0];
+            const verification = await fetchVerificationForApplication(app.id);
+            const verificationStatus = String(verification?.status || '').toUpperCase();
+            const applicationStatus = String(app.applicationStatus || 'PENDING').toUpperCase();
+            
+            const isDocumentVerified = verificationStatus === 'APPROVED' || (verificationStatus !== 'REJECTED' && applicationStatus === 'APPROVED');
+            const documentVerificationLabel = verificationStatus || 'PENDING';
+            const approvalStatus = applicationStatus === 'APPROVED' ? 'APPROVED' : applicationStatus === 'REJECTED' ? 'REJECTED' : 'PENDING';
+            const disbursementStatus = String(app.disbursementStatus || 'NOT_STARTED').toUpperCase();
+            const submittedStatus = 'SUBMITTED';
+
+            const dropdownHtml = sortedApps.length > 1 ? `
+              <div class="form-group" style="margin-bottom: 1.5rem; max-width: 320px;">
+                <label for="statusAppSelect"><strong>Select Application:</strong></label>
+                <select id="statusAppSelect" class="form-control">
+                  ${sortedApps.map(a => `
+                    <option value="${a.id}" ${Number(a.id) === Number(app.id) ? 'selected' : ''}>
+                      Application #${a.id} - ${escapeHtml(a.scheme ? a.scheme.schemeName : 'Scholarship')}
+                    </option>
+                  `).join('')}
+                </select>
               </div>
-            </div>
+            ` : '';
 
-            <div class="timeline">
-              <div class="timeline-item complete">
-                <span class="dot">✓</span>
-                <div>
-                  <h4>Application Submitted</h4>
-                  <p>${escapeHtml(submittedStatus)}</p>
+            content.innerHTML = `
+              ${dropdownHtml}
+              <div class="status-summary">
+                <div class="summary-card">
+                  <span class="pill">Application ID</span>
+                  <h3>#${app.id}</h3>
+                  <p><strong>Scholarship:</strong> ${escapeHtml(app.scheme ? app.scheme.schemeName : 'N/A')}</p>
+                  <p><strong>Application Date:</strong> ${escapeHtml(app.applicationDate || 'N/A')}</p>
                 </div>
               </div>
 
-              <div class="timeline-item ${isDocumentVerified ? 'complete' : 'pending'}">
-                <span class="dot">${isDocumentVerified ? '✓' : '•'}</span>
-                <div>
-                  <h4>Document Verification</h4>
-                  <p>${escapeHtml(documentVerificationLabel)}</p>
+              <div class="timeline">
+                <div class="timeline-item complete">
+                  <span class="dot">✓</span>
+                  <div>
+                    <h4>Application Submitted</h4>
+                    <p>${escapeHtml(submittedStatus)}</p>
+                  </div>
+                </div>
+
+                <div class="timeline-item ${isDocumentVerified ? 'complete' : 'pending'}">
+                  <span class="dot">${isDocumentVerified ? '✓' : '•'}</span>
+                  <div>
+                    <h4>Document Verification</h4>
+                    <p>${escapeHtml(documentVerificationLabel)}</p>
+                  </div>
+                </div>
+
+                <div class="timeline-item ${approvalStatus === 'APPROVED' ? 'complete' : 'pending'}">
+                  <span class="dot">${approvalStatus === 'APPROVED' ? '✓' : '•'}</span>
+                  <div>
+                    <h4>Approval Status</h4>
+                    <p>${escapeHtml(approvalStatus)}</p>
+                  </div>
+                </div>
+
+                <div class="timeline-item ${disbursementStatus === 'COMPLETED' ? 'complete' : 'pending'}">
+                  <span class="dot">${disbursementStatus === 'COMPLETED' ? '✓' : '•'}</span>
+                  <div>
+                    <h4>Disbursement Status</h4>
+                    <p>${escapeHtml(disbursementStatus)}</p>
+                  </div>
                 </div>
               </div>
+            `;
 
-              <div class="timeline-item ${approvalStatus === 'APPROVED' ? 'complete' : 'pending'}">
-                <span class="dot">${approvalStatus === 'APPROVED' ? '✓' : '•'}</span>
-                <div>
-                  <h4>Approval Status</h4>
-                  <p>${escapeHtml(approvalStatus)}</p>
-                </div>
-              </div>
+            const selectElem = document.getElementById('statusAppSelect');
+            if (selectElem) {
+              selectElem.addEventListener('change', (e) => {
+                const newId = Number(e.target.value);
+                localStorage.setItem('applicationId', String(newId));
+                renderApplicationStatus(newId);
+              });
+            }
+          }
 
-              <div class="timeline-item ${disbursementStatus === 'COMPLETED' ? 'complete' : 'pending'}">
-                <span class="dot">${disbursementStatus === 'COMPLETED' ? '✓' : '•'}</span>
-                <div>
-                  <h4>Disbursement Status</h4>
-                  <p>${escapeHtml(disbursementStatus || 'NOT_STARTED')}</p>
-                </div>
-              </div>
-            </div>
-          `;
-
+          await renderApplicationStatus(selectedAppId);
           content.classList.remove('hidden');
           loading.classList.add('hidden');
         } catch (error) {

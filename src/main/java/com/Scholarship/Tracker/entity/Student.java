@@ -20,6 +20,12 @@ public class Student {
 
     private Double marks;
 
+    @Column(name = "marks_percentage", nullable = true)
+    private Double marksPercentage;
+
+    @Column(name = "year_of_study", nullable = true)
+    private String yearOfStudy;
+
     public Student() {
     }
 
@@ -55,6 +61,14 @@ public class Student {
         this.phone = phone;
     }
 
+    public String getYearOfStudy() {
+        return yearOfStudy;
+    }
+
+    public void setYearOfStudy(String yearOfStudy) {
+        this.yearOfStudy = yearOfStudy;
+    }
+
     public Double getAnnualIncome() {
         return annualIncome;
     }
@@ -64,10 +78,22 @@ public class Student {
     }
 
     public Double getMarks() {
-        return marks;
+        return marks != null ? marks : marksPercentage;
     }
 
     public void setMarks(Double marks) {
         this.marks = marks;
+        this.marksPercentage = marks;
+    }
+
+    public Double getMarksPercentage() {
+        return marksPercentage != null ? marksPercentage : marks;
+    }
+
+    public void setMarksPercentage(Double marksPercentage) {
+        this.marksPercentage = marksPercentage;
+        if (this.marks == null) {
+            this.marks = marksPercentage;
+        }
     }
 }
